@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOMClient from "react-dom/client";
 import "./index.css";
-import MyApp from "./MyApp";
+import MyApp from "./frontend.js";
 
 
 // Create the container
