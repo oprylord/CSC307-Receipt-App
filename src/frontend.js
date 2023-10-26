@@ -5,7 +5,7 @@ function CreateTable() {
     const [jsonData, setJsonData] = useState([]);
 
     useEffect(() => {
-        fetch('templateJSON.json') // Replace with the correct URL for your JSON data
+        fetch("./templateJSON.json")
             .then((response) => response.json())
             .then((data) => setJsonData(data))
             .catch((error) => console.error('Error fetching data:', error));
@@ -18,4 +18,4 @@ function CreateTable() {
     );
 }
 
-export default CreateTable();
+export default CreateTable;
