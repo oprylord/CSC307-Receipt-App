@@ -12,7 +12,7 @@ app.get("/receipt", async (req, res) => {
     // Replace 'receipt.json' with the actual path to your JSON file
     try {
         // Read and parse the JSON file using fs/promises
-        const data = await readFile('templateJSON.json', 'utf8');
+        const data = await readFile('costcoTest.json', 'utf8');
         const jsonData = JSON.parse(data);
         res.json({ data: jsonData });
     } catch (err) {

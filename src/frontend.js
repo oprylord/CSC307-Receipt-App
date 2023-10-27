@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Table from './Table.js'
+import Header from './Header.js'
 
 function CreateTable() {
     const [jsonData, setJsonData] = useState([]);
@@ -15,6 +16,7 @@ function CreateTable() {
 
     return (
         <div>
+            <Header/>
             <Table jsonData={jsonData} /> {/* Render the Table component */}
         </div>
     );
