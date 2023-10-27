@@ -3,26 +3,21 @@ import React from "react";
 function TableHeader() {
     return (
         <thead>
-            <tr>
-                <th>Item</th>
-                <th>Price</th>
-                <th>Remove</th>
-            </tr>
+        <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+        </tr>
         </thead>
     );
 }
 function TableBody(props) {
-    const rows = props.data.map((item, index) => {
-        return (
+    const rows = props.jsonData.map((row, index) => {
+            return (
                 <tr key={index}>
-                    <td>{item.description}</td>
-                    <td>${item.total.toFixed(2)}</td>
-                    <td>
-                        <button onClick={() =>
-                            props.removeItem(index)}>
-                            Delete
-                        </button>
-                    </td>
+                    <td>{row.description}</td>
+                    <td>{row.quantity}</td>
+                    <td>{row.total}</td>
                 </tr>
             );
         }
@@ -39,8 +34,7 @@ function Table(props) {
     return (
         <table>
             <TableHeader />
-            <TableBody data={props.data}
-                       removeItem={props.removeItem} />
+            <TableBody jsonData={props.jsonData}/>
         </table>
     );
 }

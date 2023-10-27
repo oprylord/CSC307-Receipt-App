@@ -5,17 +5,24 @@ function CreateTable() {
     const [jsonData, setJsonData] = useState([]);
 
     useEffect(() => {
-        fetch("./templateJSON.json")
-            .then((response) => response.json())
-            .then((data) => setJsonData(data))
-            .catch((error) => console.error('Error fetching data:', error));
-        }, []);
+        fetchData()
+            .then((res) => res.json())
+            .then((json) => setJsonData(json["data"]["line_items"]))
+            .catch((error) => { console.log(error); });
+    }, [] );
+
+    console.log(jsonData);
 
     return (
         <div>
-            <Table data={jsonData} /> {/* Render the Table component */}
+            <Table jsonData={jsonData} /> {/* Render the Table component */}
         </div>
     );
+}
+
+function fetchData() {
+    const promise = fetch("http://localhost:8000/receipt");
+    return promise;
 }
 
 export default CreateTable;
