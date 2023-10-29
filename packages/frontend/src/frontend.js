@@ -1,9 +1,19 @@
 import React, {useState, useEffect} from 'react';
 import Table from './Table.js'
 import Header from './Header.js'
+import AddUsers from './AddUsers'
+
+let i = 0;
 
 function CreateTable() {
+    const [buttonLabels, setButtonLabels] = useState(['User 1', 'User 2', 'User 3']);
     const [jsonData, setJsonData] = useState([]);
+
+    const handleInputChange = (newLabel) => {
+        const newButtonLabels = [...buttonLabels];
+        newButtonLabels[i++] = newLabel;
+        setButtonLabels(newButtonLabels);
+    };
 
     useEffect(() => {
         fetchData()
@@ -12,12 +22,11 @@ function CreateTable() {
             .catch((error) => { console.log(error); });
     }, [] );
 
-    console.log(jsonData);
-
     return (
         <div>
             <Header/>
-            <Table jsonData={jsonData} /> {/* Render the Table component */}
+            <AddUsers onInputChange={handleInputChange}/>
+            <Table jsonData={jsonData} buttonLabels={buttonLabels}/>
         </div>
     );
 }

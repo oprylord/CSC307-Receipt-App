@@ -18,46 +18,6 @@ const gap = {
     width: "5%",
 }
 
-function AddUserSection(props) {
-    const [newUser, setNewUser] = useState("");
-
-    const handleUserChange = (e) => {
-        setNewUser(e.target.value);
-    };
-
-    const handleAddUser = () => {
-        if (newUser) {
-            props.addUser(newUser);
-            setNewUser("");
-        }
-    };
-
-    const handleKeyPress = (e) => {
-        if (e.key === "Enter") {
-            handleAddUser();
-        }
-    };
-
-    return (
-        <div style={{ display: "flex",
-            alignItems: "center",
-            justifyContent: "center", }}>
-            <label style={{ marginRight: "10px", marginTop: "10px"}}>Add Users:</label>
-            <input style={{width: "70%", marginTop: "10px"}}
-                type="text"
-                value={newUser}
-                onChange={handleUserChange}
-                onKeyPress={handleKeyPress}
-                placeholder="Enter user name"
-            />
-            <button style={{ cursor: "pointer", marginTop: "10px", marginLeft: "20px"}} onClick={handleAddUser}>
-                Add
-            </button>
-        </div>
-    );
-}
-
-
 function TableHeader() {
     return (
         <thead>
@@ -72,6 +32,7 @@ function TableHeader() {
     );
 }
 function TableBody(props) {
+    const { buttonLabels } = props;
     const rows = props.jsonData.map((row, index) => {
             return (
                 <tr key={index}>
@@ -81,10 +42,14 @@ function TableBody(props) {
                     <td></td>
                     <td style={userStyle}>
                         <div style={ {display: "inline-table"} }>
-                            <button style={{ cursor: "pointer", marginTop: "10px", marginLeft: "10px"}} >User 1</button>
-                            <button style={{ cursor: "pointer", marginTop: "10px", marginLeft: "10px"}} >User 2</button>
-                            <button style={{ cursor: "pointer", marginTop: "10px", marginLeft: "10px"}} >User 3</button>
-                            <button style={{ cursor: "pointer", marginTop: "10px", marginLeft: "10px"}} >User 4</button>
+                            {buttonLabels.map((label, i) => (
+                                <button
+                                    key={i}
+                                    style={{ cursor: "pointer", marginTop: "10px", marginLeft: "10px" }}
+                                >
+                                    {label}
+                                </button>
+                            ))}
                         </div>
                         </td>
                 </tr>
@@ -100,20 +65,14 @@ function TableBody(props) {
 
 
 function Table(props) {
-    const addUserToTable = (newUser) => {
-        // Implement the logic to add the new user to your table's data
-        // You can use this function to update the table's data state.
-    };
 
     return (
         <div>
-            <AddUserSection addUser={addUserToTable} />
             <table style={tableStyle}>
                 <TableHeader />
-                <TableBody jsonData={props.jsonData}/>
+                <TableBody jsonData={props.jsonData} buttonLabels={props.buttonLabels}/>
             </table>
         </div>
     );
 }
-
 export default Table;
