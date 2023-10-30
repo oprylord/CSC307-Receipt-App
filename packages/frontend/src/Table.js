@@ -1,32 +1,15 @@
 import React, {useState} from "react";
+import "./CSS Files/Table.css"
 
-const tableStyle = {
-    width: "80%",
-    margin: "0 auto",
-    borderCollapse: "collapse",
-}
-
-const columnStyle = {
-    width: "20%",
-    backgroundColor: "white",
-}
-
-const userStyle = {
-    backgroundColor: "white",
-}
-const gap = {
-    width: "5%",
-}
 
 function TableHeader() {
     return (
-        <thead>
-        <tr>
-            <th style={columnStyle}>Name</th>
-            <th style={columnStyle}>Quantity</th>
-            <th style={columnStyle}>Price</th>
-            <th style={gap}></th>
-            <th style={userStyle}>Users</th>
+        <thead className={"header"}>
+        <tr className={"headerRow"}>
+            <th className={"header1"}>Name</th>
+            <th className={"header2"}>Quantity</th>
+            <th className={"header3"}>Price</th>
+            <th className={"header4"}>Users</th>
         </tr>
         </thead>
     );
@@ -35,17 +18,16 @@ function TableBody(props) {
     const { buttonLabels } = props;
     const rows = props.jsonData.map((row, index) => {
             return (
-                <tr key={index}>
-                    <td style={columnStyle}>{row.description}</td>
-                    <td style={columnStyle}>{row.quantity}</td>
-                    <td style={columnStyle}>{row.total}</td>
-                    <td></td>
-                    <td style={userStyle}>
+                <tr key={index} className={"contentRows"}>
+                    <td className={"col1"}>{row.description}</td>
+                    <td className={"col2"}>{row.quantity}</td>
+                    <td className={"col3"}>{row.total}</td>
+                    <td className={"col4"}>
                         <div style={ {display: "inline-table"} }>
                             {buttonLabels.map((label, i) => (
                                 <button
                                     key={i}
-                                    style={{ cursor: "pointer", marginTop: "10px", marginLeft: "10px" }}
+                                    className={"tableButton"}
                                 >
                                     {label}
                                 </button>
@@ -67,8 +49,8 @@ function TableBody(props) {
 function Table(props) {
 
     return (
-        <div>
-            <table style={tableStyle}>
+        <div className={"container"}>
+            <table>
                 <TableHeader />
                 <TableBody jsonData={props.jsonData} buttonLabels={props.buttonLabels}/>
             </table>

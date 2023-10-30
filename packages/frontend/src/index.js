@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOMClient from "react-dom/client";
-import "./index.css";
+import "./CSS Files/index.css";
 import MyApp from "./frontend.js";
 
 
@@ -10,5 +10,5 @@ const container = document.getElementById("root");
 // Create a root
 const root = ReactDOMClient.createRoot(container);
 
-// Initial render: Render an element to the Root
+// Initial render: Render an element to the Rootindex.css
 root.render(<MyApp />);

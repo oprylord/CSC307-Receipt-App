@@ -2,12 +2,21 @@ import React, {useState, useEffect} from 'react';
 import Table from './Table.js'
 import Header from './Header.js'
 import AddUsers from './AddUsers'
+import LoginSignup from "./LoginSignup";
 
 let i = 0;
 
 function CreateTable() {
     const [buttonLabels, setButtonLabels] = useState(['User 1', 'User 2', 'User 3']);
     const [jsonData, setJsonData] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
+
+    const handleLogin = () => {
+        // Still need to edit
+        // Perform authentication logic (e.g., check username and password)
+        // If authentication is successful, set isLoggedIn to true
+        setIsLoggedIn(true);
+    };
 
     const handleInputChange = (newLabel) => {
         const newButtonLabels = [...buttonLabels];
@@ -24,9 +33,17 @@ function CreateTable() {
 
     return (
         <div>
-            <Header/>
-            <AddUsers onInputChange={handleInputChange}/>
-            <Table jsonData={jsonData} buttonLabels={buttonLabels}/>
+            {isLoggedIn ? (
+                //Will be rendered on a successful login
+                <div>
+                    <Header/>
+                    <AddUsers onInputChange={handleInputChange}/>
+                    <Table jsonData={jsonData} buttonLabels={buttonLabels}/>
+                </div>
+            ) : (
+                // If not logged in or signed up, will direct here
+                <LoginSignup onLogin={handleLogin} />
+            )}
         </div>
     );
 }
