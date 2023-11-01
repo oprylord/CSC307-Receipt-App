@@ -1,9 +1,8 @@
 import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
-import { MongoClient, ServerApiVersion } from 'mongodb';
-import bcrypt from 'bcrypt';
 import { readFile } from 'fs/promises';
+import dotenv from "dotenv";
 
 const username = encodeURIComponent("gavinlynch04");
 const password = encodeURIComponent("HLkQPQ8sHAzRhbog");
@@ -12,34 +11,32 @@ const uri = "mongodb+srv://${username}:${password}@receipt.xjnd3x0.mongodb.net/?
 const app = express();
 const port = 8000;
 
-/*mongoose.connect('mongodb://localhost:27017/receiptDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});*/
-
 app.use(cors());
 app.use(express.json());
 
-const client = new MongoClient(uri, {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    }
-});
+dotenv.config();
 
-async function run() {
-    try {
-        await client.connect();
-        const database = client.db("admin");
-        const ratings = database.collection("");
-        const cursor = ratings.find();
-        await cursor.forEach(doc => console.dir(doc));
-    } finally {
-        await client.close();
-    }
-}
-run().catch(console.dir);
+// Uncomment the following to debug mongoose queries, etc.
+mongoose.set("debug", true);
+console.log(">>mongo cluster: " + process.env.MONGO_CLUSTER);
+mongoose
+    .connect(
+        "mongodb+srv://" +
+        process.env.MONGO_USER +
+        ":" +
+        process.env.MONGO_PWD +
+        "@" +
+        process.env.MONGO_CLUSTER +
+        "/" +
+        process.env.MONGO_DB +
+        "?retryWrites=true&w=majority",
+        // "mongodb://localhost:27017/users",
+        {
+            useNewUrlParser: true, //useFindAndModify: false,
+            useUnifiedTopology: true,
+        }
+    )
+    .catch((error) => console.log(error));
 
 const UserSchema = new mongoose.Schema({
     username: String,
