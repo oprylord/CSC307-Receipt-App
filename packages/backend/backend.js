@@ -2,11 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
 import { readFile } from 'fs/promises';
-import dotenv from "dotenv";
-
-const username = encodeURIComponent("gavinlynch04");
-const password = encodeURIComponent("HLkQPQ8sHAzRhbog");
-const uri = "mongodb+srv://${username}:${password}@receipt.xjnd3x0.mongodb.net/?retryWrites=true&w=majority";
+import * as dotenv from "dotenv";
 
 const app = express();
 const port = 8000;
@@ -27,9 +23,7 @@ mongoose
         process.env.MONGO_PWD +
         "@" +
         process.env.MONGO_CLUSTER +
-        "/" +
-        process.env.MONGO_DB +
-        "?retryWrites=true&w=majority",
+        "/?retryWrites=true&w=majority",
         // "mongodb://localhost:27017/users",
         {
             useNewUrlParser: true, //useFindAndModify: false,
@@ -41,6 +35,7 @@ mongoose
 const UserSchema = new mongoose.Schema({
     username: String,
     password: String,
+    email: String,
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -57,6 +52,20 @@ app.get("/receipt", async (req, res) => {
         res.status(500).json({ error: 'Error reading JSON file' });
     }});
 
+app.post('/register', (req, res) => {
+    const { username, password, email } = req.body;
+    const user = new User({ username, password, email });
+    user.save()
+        .then(() => {
+            res.json({ message: 'User registered successfully' });
+        })
+        .catch(err => {
+            res.status(400).json({ error: err.message });
+        });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+module.exports = User;
