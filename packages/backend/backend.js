@@ -3,9 +3,11 @@ import cors from "cors";
 import mongoose from 'mongoose';
 import { readFile } from 'fs/promises';
 import * as dotenv from "dotenv";
+import bcrypt from "bcrypt";
 
 const app = express();
 const port = 8000;
+const saltRounds = 10;
 
 app.use(cors());
 app.use(express.json());
@@ -32,10 +34,20 @@ mongoose
     )
     .catch((error) => console.log(error));
 
-const UserSchema = new mongoose.Schema({
-    username: String,
-    password: String,
-    email: String,
+export const UserSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -52,20 +64,49 @@ app.get("/receipt", async (req, res) => {
         res.status(500).json({ error: 'Error reading JSON file' });
     }});
 
-app.post('/register', (req, res) => {
+app.post("/register", async (req, res) => {
     const { username, password, email } = req.body;
-    const user = new User({ username, password, email });
-    user.save()
-        .then(() => {
+    try {
+        const existingUser = await User.findOne({ email }).exec();
+        if (existingUser) {
+            return res.status(400).json({ error: "Email is already registered. Please Login" });
+        } else {
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            const user = new User({ username, password: hashedPassword, email });
+            await user.save();
             res.json({ message: 'User registered successfully' });
-        })
-        .catch(err => {
-            res.status(400).json({ error: err.message });
-        });
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const existingUser = await User.findOne({ email }).exec();
+
+        if (!existingUser) {
+            return res.status(401).json({ error: "User not found, please sign up." });
+        }
+
+        // Assuming you are using bcrypt for password hashing
+        const passwordMatch = await bcrypt.compare(password, existingUser.password);
+
+        if (passwordMatch) {
+            res.json({ message: "Login successful" });
+        } else {
+            res.status(401).json({ error: "Incorrect password." });
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
-module.exports = User;
