@@ -12,9 +12,6 @@ function CreateTable() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const handleLogin = () => {
-        // Still need to edit
-        // Perform authentication logic (e.g., check username and password)
-        // If authentication is successful, set isLoggedIn to true
         setIsLoggedIn(true);
     };
 
