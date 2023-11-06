@@ -34,6 +34,14 @@ body {
     background: #8cbcfe;
 }
 
+.error-messages {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    padding-top: 20px;
+    color: red;
+}
+
 .inputs {
     margin-top: 50px;
     display: flex;
