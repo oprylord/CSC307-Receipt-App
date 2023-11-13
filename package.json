@@ -9,7 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "create-react-app": "^5.0.1"
+    "archiver": "^6.0.1",
+    "create-react-app": "^5.0.1",
+    "node-stream-zip": "^1.15.0",
+    "request-promise": "^4.2.6"
   },
   "workspaces": [
     "packages/*"

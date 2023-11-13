@@ -4,6 +4,9 @@ import mongoose from 'mongoose';
 import { readFile } from 'fs/promises';
 import * as dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import fs from 'fs';
+import request from 'request-promise';
+import archiver from 'archiver';
 
 const app = express();
 const port = 8000;
@@ -26,7 +29,6 @@ mongoose
         "@" +
         process.env.MONGO_CLUSTER +
         "/?retryWrites=true&w=majority",
-        // "mongodb://localhost:27017/users",
         {
             useNewUrlParser: true, //useFindAndModify: false,
             useUnifiedTopology: true,
@@ -105,6 +107,63 @@ app.post("/login", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+/*app.get("/process", async (req, res) => {
+    const listFiles = ['receipt1.jpg'];
+    const zipFilePath = 'receipts.zip';
+
+    // Create a writable stream to the ZIP file
+    const output = fs.createWriteStream(zipFilePath);
+
+    // Create an archiver object
+    const archive = archiver('zip', {
+        zlib: { level: 9 }, // Set compression level
+    });
+
+    // Pipe the archive to the output stream
+    archive.pipe(output);
+
+    // Add files to the ZIP archive
+    for (const file of listFiles) {
+        archive.file(file, { name: file }); // Add each file to the ZIP archive
+    }
+
+    // Finalize the archive
+    archive.finalize();
+
+    // Handle the 'close' event when the ZIP archive is ready
+    output.on('close', async () => {
+        // Your code to handle the ZIP archive when it's ready
+        // Configure the request options
+        const requestOptions = {
+            'method': 'POST',
+            'uri': 'https://api.veryfi.com/api/v7/partner/documents',
+            'headers': {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'CLIENT-ID': process.env.CLIENT_ID,
+                'AUTHORIZATION': 'apikey ' + process.env.USERNAME + ':' + process.env.API_KEY
+            },
+            'formData': {
+                'file': {
+                    'value': fs.createReadStream(zipFilePath),
+                    'options': {
+                        'filename': zipFilePath,
+                        'contentType': 'application/zip',
+                    },
+                },
+            },
+        };
+
+        try {
+            // Send the ZIP file to the Veryfi API
+            const response = await request(requestOptions);
+            console.log('Response from Veryfi:', response);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+});*/
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
