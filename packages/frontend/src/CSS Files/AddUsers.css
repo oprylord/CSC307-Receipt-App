@@ -7,3 +7,17 @@
     height: 40px;
     font-size: 15px;
 }
+
+.submitButton {
+    margin-left: 10px;
+    margin-right: 10px;
+    border: none;
+    height: 45px;
+    width: 70px;
+    background-color: lightblue;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+.submitButton:active {
+    background-color: #2980b9;
+    transform: scale(0.95); /* Add a slight scaling effect when pressed */
+}

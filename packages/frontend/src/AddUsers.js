@@ -21,7 +21,7 @@ function InputField({ onInputChange }) {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
             />
-            <button type="submit" style={{ display: 'inline-block', justifyContent: 'center' }}>Submit</button>
+            <button type="submit" className={"submitButton"}>Submit</button>
         </form>
     );
 }

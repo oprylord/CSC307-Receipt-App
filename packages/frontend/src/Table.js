@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import "./CSS Files/Table.css"
 
-
 function TableHeader() {
     return (
         <thead className={"header"}>
@@ -33,7 +32,6 @@ function TableBody(props) {
     const rows = props.jsonData.map((row, rowIndex) => {
             return (
                 <tr key={rowIndex} className={"contentRows"}>
-
                     <td className={"col1"}>{row.description}</td>
                     <td className={"col2"}>{row.quantity}</td>
                     <td className={"col3"}>{row.total}</td>
@@ -44,7 +42,8 @@ function TableBody(props) {
                                     key={i}
                                     className={"tableButton"}
                                     style={{
-                                        backgroundColor: buttonStates[rowIndex][i].clicked ? 'blue' : 'lightblue'
+                                        backgroundColor: buttonStates[rowIndex][i].clicked ? "#2980b9" : 'lightblue',
+                                        transform: buttonStates[rowIndex][i].clicked ? "scale(0.95)" : "scale(1)",
                                     }}
                                     onClick={() => handleButtonClick(rowIndex, i)}
                                 >
