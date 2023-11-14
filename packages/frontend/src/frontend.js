@@ -3,6 +3,7 @@ import Table from './Table.js'
 import Header from './Header.js'
 import AddUsers from './AddUsers'
 import LoginSignup from "./LoginSignup";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 let i = 0;
 
@@ -28,20 +29,32 @@ function CreateTable() {
             .catch((error) => { console.log(error); });
     }, [] );
 
+    const HomePage = () => {
+        return (
+            <div>
+                {isLoggedIn ? (
+                    //Will be rendered on a successful login
+                    <div>
+                        <Header/>
+                        <AddUsers onInputChange={handleInputChange}/>
+                        <Table jsonData={jsonData} buttonLabels={buttonLabels}/>
+                    </div>
+                ) : (
+                    // If not logged in or signed up, will direct here
+                    <LoginSignup onLogin={handleLogin} />
+                )}
+            </div>
+        );
+    };
+
     return (
-        <div>
-            {isLoggedIn ? (
-                //Will be rendered on a successful login
-                <div>
-                    <Header/>
-                    <AddUsers onInputChange={handleInputChange}/>
-                    <Table jsonData={jsonData} buttonLabels={buttonLabels}/>
-                </div>
-            ) : (
-                // If not logged in or signed up, will direct here
-                <LoginSignup onLogin={handleLogin} />
-            )}
-        </div>
+        <Router>
+            <Routes>
+                <Route path="imageUpload" />
+                <Route path="/history" />
+                <Route path="/" element={<HomePage />} />
+            </Routes>
+        </Router>
     );
 }
 
