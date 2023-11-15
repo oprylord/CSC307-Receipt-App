@@ -3,6 +3,7 @@ import Table from './Table.js'
 import Header from './Header.js'
 import AddUsers from './AddUsers'
 import LoginSignup from "./LoginSignup";
+import PopUp from './PopUp.js';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 let i = 0;
@@ -38,6 +39,7 @@ function CreateTable() {
                         <Header/>
                         <AddUsers onInputChange={handleInputChange}/>
                         <Table jsonData={jsonData} buttonLabels={buttonLabels}/>
+                        <PopUp/>
                     </div>
                 ) : (
                     // If not logged in or signed up, will direct here
@@ -50,7 +52,7 @@ function CreateTable() {
     return (
         <Router>
             <Routes>
-                <Route path="imageUpload" />
+                <Route path="/imageUpload" />
                 <Route path="/history" />
                 <Route path="/" element={<HomePage />} />
             </Routes>
@@ -59,8 +61,7 @@ function CreateTable() {
 }
 
 function fetchData() {
-    const promise = fetch("http://localhost:8000/receipt");
-    return promise;
+    return fetch("http://localhost:8000/receipt");
 }
 
 export default CreateTable;
