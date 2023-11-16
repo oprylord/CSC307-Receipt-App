@@ -15,7 +15,6 @@ function InputField({ onInputChange }) {
     return (
         <form onSubmit={handleSubmit} style={{ textAlign: 'center' }} className={"userForm"}>
             <input className={"username"}
-                style={{ display: 'inline-block', width: '70%', justifyContent: 'center', marginRight: '10px'}}
                 type="text"
                 placeholder={"Input a name to update or add new buttons"}
                 value={inputValue}

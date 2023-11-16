@@ -63,13 +63,7 @@ function TableBody(props) {
     );
 }
 
-function clicked(button) {
-    button.style.backgroundColor = 'navy';
-}
-
-
 function Table(props) {
-
     return (
         <div className={"container"}>
             <table>
