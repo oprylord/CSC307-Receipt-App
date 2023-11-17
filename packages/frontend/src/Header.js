@@ -18,17 +18,17 @@ function Header() {
             <h3>QuickSplit</h3>
             <nav ref={navRef}>
                 <a href="/">Home</a>
-                <a href="/#">Image Upload</a>
+                <a href="/imageUpload">Image Upload</a>
                 <a href="/#">Image Capture</a>
                 <a href="/#">History</a>
                 <button
-                    className="nav-btn nav-close-btn"
+                    className="navigation-button navigation-close-button"
                     onClick={showNavbar}>
                     <FaTimes />
                 </button>
             </nav>
             <button
-                className="nav-btn"
+                className="navigation-button"
                 onClick={showNavbar}>
                 <FaBars />
             </button>

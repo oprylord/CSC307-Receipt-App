@@ -4,6 +4,7 @@ import Header from './Header.js'
 import AddUsers from './AddUsers'
 import LoginSignup from "./LoginSignup";
 import PopUp from './PopUp.js';
+import ImageUpload from './ImageUpload';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 let i = 0;
@@ -23,12 +24,23 @@ function CreateTable() {
         setButtonLabels(newButtonLabels);
     };
 
-    useEffect(() => {
-        fetchData()
-            .then((res) => res.json())
-            .then((json) => setJsonData(json["data"]["line_items"]))
-            .catch((error) => { console.log(error); });
-    }, [] );
+        useEffect(() => {
+            fetchData()
+                .then((res) => res.json())
+                .then((json) => setJsonData(json["data"]["line_items"]))
+                .catch((error) => {
+                    console.log(error);
+                });
+        }, []);
+
+    const Upload = () => {
+        return (
+            <div>
+                <Header/>
+                <ImageUpload />
+            </div>
+        )
+    }
 
     const HomePage = () => {
         return (
@@ -52,7 +64,7 @@ function CreateTable() {
     return (
         <Router>
             <Routes>
-                <Route path="/imageUpload" />
+                <Route path="/imageUpload" element={<Upload />} />
                 <Route path="/history" />
                 <Route path="/" element={<HomePage />} />
             </Routes>
