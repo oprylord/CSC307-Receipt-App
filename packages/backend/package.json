@@ -5,7 +5,7 @@
   "type": "module",
   "main": "backend.js",
   "scripts": {
-    "build": "CI=false build",
+    "build": "CI=false react-scripts build",
     "test": "echo \"Error: no test specified\"",
     "lint": "eslint --ext=.jsx,.js,.tsx,.ts",
     "dev": "npx nodemon backend.js",
