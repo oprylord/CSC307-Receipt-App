@@ -23,7 +23,7 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install --workspaces=backend
+          npm install
           npm run -w backend build --if-present
           npm run -w backend test --if-present
         working-directory: packages/backend
