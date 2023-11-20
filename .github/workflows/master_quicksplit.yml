@@ -23,7 +23,9 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install
+          npm install --workspaces=false
+          npm run build
+          npm run test
         working-directory: packages/backend
 
       - name: Zip artifact for deployment
