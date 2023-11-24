@@ -11,7 +11,7 @@ const LoginSignup = ({ onLogin }) => {
     const handleLoginClick = async () => {
         try {
             const data = { email, password };
-            const response = await fetch("http://localhost:8000/login", {
+            const response = await fetch("http://quicksplit.azurewebsites.net/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -37,7 +37,7 @@ const LoginSignup = ({ onLogin }) => {
     const handleSignUpClick = async () => {
         try {
             const data = { username, password, email };
-            const response = await fetch("http://localhost:8000/register", {
+            const response = await fetch("http://quicksplit.azurewebsites.net/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
