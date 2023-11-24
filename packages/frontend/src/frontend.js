@@ -61,7 +61,7 @@ function CreateTable() {
 }
 
 function fetchData() {
-    return fetch("http://localhost:8000/receipt");
+    return fetch("http://quicksplit.azurewebsites.net/receipt");
 }
 
 export default CreateTable;
