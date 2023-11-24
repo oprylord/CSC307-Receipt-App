@@ -32,14 +32,6 @@ jobs:
         run: zip release.zip ./* -r
         working-directory: packages/backend
 
-      - name: echoo
-        run: |
-          ls
-          cd packages
-          ls
-          cd backend
-          ls
-
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
