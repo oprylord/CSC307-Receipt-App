@@ -20,9 +20,9 @@ const PopupButton = (props) => {
     }, []);
 
     return (
-        <div>
-            <button onClick={openModal}>
-                Open Popup
+        <div className="modalContainer">
+            <button onClick={openModal} className='calculate'>
+                Submit
             </button>
 
             <Modal
@@ -45,8 +45,8 @@ const PopupButton = (props) => {
             >
                 <div>
                     {popupData}
-                    <button onClick={closeModal}>
-                        Close Popup
+                    <button onClick={closeModal} className='closeButton'>
+                        X
                     </button>
                 </div>
             </Modal>

@@ -2,20 +2,8 @@ import React, {useState} from "react";
 import "./CSS Files/Table.css"
 import PopUp from "./PopUp";
 
-function TableHeader() {
-    return (
-        <thead className={"header"}>
-        <tr className={"headerRow"}>
-            <th className={"header1"}>Name</th>
-            <th className={"header2"}>Quantity</th>
-            <th className={"header3"}>Price</th>
-            <th className={"header4"}>Users</th>
-        </tr>
-        </thead>
-    );
-}
+const Table = (props) => {
 
-function TableBody(props) {
     const { buttonLabels } = props;
 
     const initialStates = props.jsonData.map(() =>
@@ -33,16 +21,26 @@ function TableBody(props) {
     const splitCost = () => {
         let costs = buttonLabels.map(() => 0);
         for(let i = 0; i < buttonStates.length; i++){
-            let numUsers = buttonStates[i].filter(Boolean).length;
+            let numUsers = 0;
+            for(let j = 0; j < buttonStates[i].length; j++){
+                if(buttonStates[i][j].clicked) numUsers++;
+            }
+
+            console.log("numUsers: ", numUsers);
             if(numUsers > 0) {
-                let cost = props.jsonData.total[i] / numUsers;
+                let cost = props.jsonData[i].total / numUsers;
+                console.log(props.jsonData[i].total);
                 for (let user = 0; user < buttonLabels.length; user++) {
-                    if (buttonStates[i][user]) costs[user] += cost;
+                    if (buttonStates[i][user].clicked) costs[user] += cost;
                 }
             }
         }
         console.log(costs);
-        return buttonLabels[0] + ": " + costs[0];
+        let retStr = "";
+        for(let i = 0; i < buttonLabels.length; i++){
+            retStr += buttonLabels[i] + ": " + costs[i] + "\n";
+        }
+        return retStr;
     }
 
     const rows = props.jsonData.map((row, rowIndex) => {
@@ -67,30 +65,30 @@ function TableBody(props) {
                                 </button>
                             ))}
                         </div>
-                        </td>
+                    </td>
                 </tr>
             );
         }
     );
-    return (
-        <tbody>
-        {rows}
-        </tbody>
-    );
-}
 
-function Table(props) {
-    //let costs = splitCost();
     return (
         <div className={"container"}>
             <table>
-                <TableHeader />
-                <TableBody jsonData={props.jsonData} buttonLabels={props.buttonLabels}/>
-                <PopUp popupData = {"asgawdhawrh"}/>
+                <thead className={"header"}>
+                <tr className={"headerRow"}>
+                    <th className={"header1"}>Name</th>
+                    <th className={"header2"}>Quantity</th>
+                    <th className={"header3"}>Price</th>
+                    <th className={"header4"}>Users</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+                <PopUp popupData = {splitCost()}/>
             </table>
         </div>
     );
 }
 
-export { TableBody };
 export default Table;
