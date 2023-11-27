@@ -66,7 +66,7 @@ app.get("/receipt", async (req, res) => {
         res.status(500).json({ error: 'Error reading JSON file' });
     }});
 
-app.get("/register", async (req, res) => {
+app.post("/register", async (req, res) => {
     const { username, password, email } = req.body;
     try {
         const existingUser = await User.findOne({ email }).exec();
@@ -84,7 +84,7 @@ app.get("/register", async (req, res) => {
     }
 });
 
-app.get("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     try {
