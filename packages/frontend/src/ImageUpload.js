@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import './CSS Files/ImageUpload.css';
 
@@ -24,18 +24,29 @@ const ImageUpload = () => {
                 const userConfirmed = window.confirm('File uploaded successfully. Do you want to process this data?');
 
                 if (userConfirmed) {
-                    fetch(`http://localhost:8000/process`)
-                        .then(response => {
+                    const token = localStorage.getItem('token');
+
+                    const requestOptions = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                        },
+                    };
+
+                    fetch('http://localhost:8000/upload', requestOptions)
+                        .then((response) => {
                             if (!response.ok) {
                                 throw new Error(`HTTP error! Status: ${response.status}`);
                             }
                             return response.json();
                         })
-                        .then(data => {
-                            console.log('JSON data saved to main.json');
+                        .then((data) => {
+                            console.log('File uploaded successfully:', data);
+
                         })
-                        .catch(error => {
-                            console.error('Error calling /process:', error.message);
+                        .catch((error) => {
+                            console.error('Error uploading file:', error.message);
                         });
                 }
             } catch (error) {

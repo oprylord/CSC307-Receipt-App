@@ -9,6 +9,7 @@ import path from 'path';
 import fs from 'fs';
 import request from 'request-promise';
 import archiver from 'archiver';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const port = 8000;
@@ -55,6 +56,22 @@ export const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+    console.error('JWT secret is not defined. Set the JWT_SECRET environment variable.');
+    process.exit(1);
+}
+const verifyToken = (req, res, next) => {
+    const token = req.header('Authorization');
+    if (!token) return res.status(401).json({ error: 'Access denied. Token not provided.' });
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(401).json({ error: 'Invalid token.' });
+        req.user = user;
+        next();
+    });
+};
+
 app.get("/receipt", async (req, res) => {
     // Replace 'receipt.json' with the actual path to your JSON file
     try {
@@ -85,8 +102,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Handle file upload
-app.post('/upload', upload.single('file'), async (req, res) => {
+app.post('/upload', verifyToken, upload.single('file'), async (req, res) => {
     const file = req.file;
 
     if (!file) {
@@ -133,7 +149,8 @@ app.post("/login", async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
         if (passwordMatch) {
-            res.json({ message: "Login successful" });
+            const token = jwt.sign({ userId: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            res.json({ message: "Login successful", token });
         } else {
             res.status(401).json({ error: "Incorrect password." });
         }
@@ -143,7 +160,7 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.get("/process", async (req, res) => {
+app.get("/process", verifyToken, async (req, res) => {
     const listFiles = [relativeFilePath];
     const zipFilePath = 'receipts.zip';
 

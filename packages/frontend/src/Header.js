@@ -17,7 +17,7 @@ function Header() {
         <header>
             <h3>QuickSplit</h3>
             <nav ref={navRef}>
-                <a href="/">Home</a>
+                <a href="/home">Home</a>
                 <a href="/imageUpload">Image Upload</a>
                 <a href="/#">Image Capture</a>
                 <a href="/#">History</a>
