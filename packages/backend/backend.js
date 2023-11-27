@@ -77,7 +77,7 @@ app.post("/register", async (req, res) => {
     } catch (err) {
         console.error("Error:", err);
         console.log(err);
-        res.status(501).json({ error: "Internal server error" });
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -102,7 +102,7 @@ app.post("/login", async (req, res) => {
     } catch (err) {
         console.error("Error:", err);
         console.log(err);
-        res.status(501).json({ error: "Internal server error" });
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
