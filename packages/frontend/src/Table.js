@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import "./CSS Files/Table.css"
+import PopUp from "./PopUp";
 
 function TableHeader() {
     return (
@@ -28,6 +29,21 @@ function TableBody(props) {
         newButtonStates[row][col].clicked = !newButtonStates[row][col].clicked;
         setButtonStates(newButtonStates);
     };
+
+    const splitCost = () => {
+        let costs = buttonLabels.map(() => 0);
+        for(let i = 0; i < buttonStates.length; i++){
+            let numUsers = buttonStates[i].filter(Boolean).length;
+            if(numUsers > 0) {
+                let cost = props.jsonData.total[i] / numUsers;
+                for (let user = 0; user < buttonLabels.length; user++) {
+                    if (buttonStates[i][user]) costs[user] += cost;
+                }
+            }
+        }
+        console.log(costs);
+        return buttonLabels[0] + ": " + costs[0];
+    }
 
     const rows = props.jsonData.map((row, rowIndex) => {
             return (
@@ -63,20 +79,18 @@ function TableBody(props) {
     );
 }
 
-function clicked(button) {
-    button.style.backgroundColor = 'navy';
-}
-
-
 function Table(props) {
-
+    //let costs = splitCost();
     return (
         <div className={"container"}>
             <table>
                 <TableHeader />
                 <TableBody jsonData={props.jsonData} buttonLabels={props.buttonLabels}/>
+                <PopUp popupData = {"asgawdhawrh"}/>
             </table>
         </div>
     );
 }
+
+export { TableBody };
 export default Table;

@@ -39,7 +39,6 @@ function CreateTable() {
                         <Header/>
                         <AddUsers onInputChange={handleInputChange}/>
                         <Table jsonData={jsonData} buttonLabels={buttonLabels}/>
-                        <PopUp/>
                     </div>
                 ) : (
                     // If not logged in or signed up, will direct here
