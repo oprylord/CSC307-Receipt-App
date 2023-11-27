@@ -69,6 +69,10 @@ app.get("/receipt", async (req, res) => {
 app.post("/register", async (req, res) => {
     const { username, password, email } = req.body;
     try {
+        const existingUser = await User.findOne({ email }).exec();
+        if (existingUser) {
+            return res.status(400).json({ error: "Email is already registered. Please Login" });
+        } else {
             const hashedPassword = await bcrypt.hash(password, saltRounds);
             const user = new User({ username, password: hashedPassword, email });
             await user.save();
@@ -76,7 +80,6 @@ app.post("/register", async (req, res) => {
         }
     } catch (err) {
         console.error("Error:", err);
-        console.log(err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -101,7 +104,6 @@ app.post("/login", async (req, res) => {
         }
     } catch (err) {
         console.error("Error:", err);
-        console.log(err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -166,4 +168,3 @@ app.post("/login", async (req, res) => {
 app.listen(process.env.PORT || port, () => {
     console.log(`Server is running on port ${port}`);
 });
-
