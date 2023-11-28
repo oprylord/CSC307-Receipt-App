@@ -41,7 +41,6 @@ function CreateTable() {
                 <Header />
                 <AddUsers onInputChange={handleInputChange} />
                 <Table jsonData={jsonData} buttonLabels={buttonLabels} />
-                <PopUp />
             </div>
         );
     };

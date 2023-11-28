@@ -3,9 +3,9 @@ import Modal from 'react-modal';
 import "./CSS Files/PopUp.css";
 
 
-const PopupButton = () => {
+const PopupButton = (props) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const popupData = "Hello, this is data for the modal!";
+    const popupData = props.popupData;
 
     const openModal = () => {
         setIsModalOpen(true);
