@@ -19,6 +19,8 @@ const PopupButton = (props) => {
         Modal.setAppElement('#root');
     }, []);
 
+    console.log(popupData);
+
     return (
         <div className="modalContainer">
             <button onClick={openModal} className='calculate'>
@@ -34,17 +36,23 @@ const PopupButton = (props) => {
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     },
                     content: {
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         maxWidth: '400px',
                         margin: 'auto',
                         padding: '20px',
                         backgroundColor: '#fff',
-                        borderRadius: '5px',
-                        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                        borderRadius: '10px',
+                        boxShadow: '0 0 20px rgba(0, 0, 0, 0.2)',
                     },
                 }}
             >
                 <div>
-                    {popupData}
+                    {popupData.map((item, index) => (
+                        <div key={index} className='modalText'>{item}</div>
+                    ))}
                     <button onClick={closeModal} className='closeButton'>
                         X
                     </button>

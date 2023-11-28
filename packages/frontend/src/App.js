@@ -24,17 +24,12 @@ function CreateTable() {
     const handleInputChange = (newLabel) => {
         const updatedLabels = [...buttonLabels];
 
-        // If currentIndex is within the bounds of the array, update the label
         if (currentIndex < updatedLabels.length) {
             updatedLabels[currentIndex] = newLabel;
         } else {
-            // If currentIndex is greater than or equal to the array length, add a new label
             updatedLabels.push(newLabel);
         }
-
         setButtonLabels(updatedLabels);
-
-        // Move to the next index for the next update
         setCurrentIndex(currentIndex + 1);
     };
 
