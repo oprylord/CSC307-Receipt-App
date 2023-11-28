@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
-import { readFile } from 'fs/promises';
+import {readFile} from 'fs/promises';
 import * as dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import multer from 'multer';
@@ -62,17 +62,21 @@ if (!jwtSecret) {
     process.exit(1);
 }
 const verifyToken = (req, res, next) => {
-    const token = req.header('Authorization');
-    if (!token) return res.status(401).json({ error: 'Access denied. Token not provided.' });
+    const token = req.header('Authorization').split(' ')[1];
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.status(401).json({ error: 'Invalid token.' });
-        req.user = user;
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized: No token provided' });
+    }
+
+    try {
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
         next();
-    });
+    } catch (err) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
 };
 
-app.get("/receipt", async (req, res) => {
+app.get("/receipt", verifyToken, async (req, res) => {
     // Replace 'receipt.json' with the actual path to your JSON file
     try {
         // Read and parse the JSON file using fs/promises
@@ -208,7 +212,6 @@ app.get("/process", verifyToken, async (req, res) => {
         };
 
         try {
-            // Send the ZIP file to the Veryfi API
             const response = await request(requestOptions);
             const responseData = typeof response === 'string' ? JSON.parse(response) : response;
             fs.writeFileSync('./main.json', JSON.stringify(responseData, null, 2));

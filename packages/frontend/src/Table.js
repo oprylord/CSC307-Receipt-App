@@ -6,6 +6,7 @@ const Table = (props) => {
 
     const { buttonLabels } = props;
 
+
     const initialStates = props.jsonData.map(() =>
         buttonLabels.map(() => ({ clicked: false }))
     );

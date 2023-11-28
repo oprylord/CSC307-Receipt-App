@@ -15,9 +15,13 @@ const ImageUpload = () => {
             formData.append('file', file);
 
             try {
-                await axios.post('http://localhost:8000/upload', formData, {
+                const token = localStorage.getItem('token');
+                console.log(token);
+                await fetch('http://localhost:8000/upload', {
+                    method: 'POST',
+                    body: formData,
                     headers: {
-                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${token}`,
                     },
                 });
 
@@ -27,14 +31,14 @@ const ImageUpload = () => {
                     const token = localStorage.getItem('token');
 
                     const requestOptions = {
-                        method: 'POST',
+                        method: 'GET',
                         headers: {
                             'Content-Type': 'multipart/form-data',
                             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                         },
                     };
 
-                    fetch('http://localhost:8000/upload', requestOptions)
+                    fetch('http://localhost:8000/process', requestOptions)
                         .then((response) => {
                             if (!response.ok) {
                                 throw new Error(`HTTP error! Status: ${response.status}`);

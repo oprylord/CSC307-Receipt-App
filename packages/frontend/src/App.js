@@ -12,6 +12,8 @@ let i = 0;
 function CreateTable() {
     const [buttonLabels, setButtonLabels] = useState(['User 1', 'User 2', 'User 3']);
     const [jsonData, setJsonData] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
 
     useEffect(() => {
         fetchData()
@@ -23,8 +25,20 @@ function CreateTable() {
     }, []);
 
     const handleInputChange = (newLabel) => {
-        const newButtonLabels = [...buttonLabels];
-        setButtonLabels(newButtonLabels);
+        const updatedLabels = [...buttonLabels];
+
+        // If currentIndex is within the bounds of the array, update the label
+        if (currentIndex < updatedLabels.length) {
+            updatedLabels[currentIndex] = newLabel;
+        } else {
+            // If currentIndex is greater than or equal to the array length, add a new label
+            updatedLabels.push(newLabel);
+        }
+
+        setButtonLabels(updatedLabels);
+
+        // Move to the next index for the next update
+        setCurrentIndex(currentIndex + 1);
     };
 
     const Upload = () => {
@@ -35,6 +49,7 @@ function CreateTable() {
             </div>
         );
     };
+
     const HomePage = () => {
         return (
             <div>
@@ -69,7 +84,13 @@ function CreateTable() {
 }
 
 function fetchData() {
-    return fetch("http://localhost:8000/receipt");
+    const token = localStorage.getItem('token');
+    return fetch("http://localhost:8000/receipt", {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
 }
 
 export default CreateTable;
