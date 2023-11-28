@@ -3,11 +3,8 @@ import Table from './Table.js'
 import Header from './Header.js'
 import AddUsers from './AddUsers'
 import LoginSignup from "./LoginSignup";
-import PopUp from './PopUp.js';
 import ImageUpload from './ImageUpload';
 import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
-
-let i = 0;
 
 function CreateTable() {
     const [buttonLabels, setButtonLabels] = useState(['User 1', 'User 2', 'User 3']);
