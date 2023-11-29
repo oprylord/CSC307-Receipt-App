@@ -20,13 +20,18 @@ const Table = (props) => {
     };
 
     const splitCost = () => {
+        // This method handles the logic of splitting up the receipt
         let costs = buttonLabels.map(() => 0);
+
+        // Iterates through each item purchased
         for(let i = 0; i < buttonStates.length; i++){
+            // Counting the number of users who purchased this item
             let numUsers = 0;
             for(let j = 0; j < buttonStates[i].length; j++){
                 if(buttonStates[i][j].clicked) numUsers++;
             }
 
+            // Adding the cost of the item to each user's running total
             if(numUsers > 0) {
                 let cost = props.jsonData[i].total / numUsers;
                 for (let user = 0; user < buttonLabels.length; user++) {
@@ -35,6 +40,7 @@ const Table = (props) => {
             }
         }
 
+        // Creating and returning a string of the final results
         let retStr = "";
         for(let i = 0; i < buttonLabels.length; i++){
             retStr += buttonLabels[i] + ": " + costs[i] + "\n";
@@ -42,6 +48,7 @@ const Table = (props) => {
         return retStr;
     }
 
+    // Table body
     const rows = props.jsonData.map((row, rowIndex) => {
             return (
                 <tr key={rowIndex} className={"contentRows"}>
@@ -55,9 +62,11 @@ const Table = (props) => {
                                     key={i}
                                     className={"tableButton"}
                                     style={{
+                                        // Toggle the button color based on whether it has been clicked
                                         backgroundColor: buttonStates[rowIndex][i].clicked ? "#2980b9" : 'lightblue',
                                         transform: buttonStates[rowIndex][i].clicked ? "scale(0.95)" : "scale(1)",
                                     }}
+                                    // When a button is clicked, toggle it's state by calling the handler
                                     onClick={() => handleButtonClick(rowIndex, i)}
                                 >
                                     {label}
@@ -71,6 +80,8 @@ const Table = (props) => {
     );
 
     return (
+        // Table headers and popup which calls splitCost each time a button state is updated
+        // popup is only displayed when clicked on
         <div className={"container"}>
             <table>
                 <thead className={"header"}>

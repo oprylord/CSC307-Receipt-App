@@ -4,13 +4,17 @@ import "./CSS Files/PopUp.css";
 
 
 const PopupButton = (props) => {
+    // Initialize the popup to closed
     const [isModalOpen, setIsModalOpen] = useState(false);
+    // Gets the contents of the popup from props
     const popupData = props.popupData;
 
+    // Called to open the popup
     const openModal = () => {
         setIsModalOpen(true);
     };
 
+    // Called to close the popup
     const closeModal = () => {
         setIsModalOpen(false);
     };
@@ -29,6 +33,7 @@ const PopupButton = (props) => {
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
                 contentLabel="Popup Modal"
+                // Color settings
                 style={{
                     overlay: {
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -42,6 +47,8 @@ const PopupButton = (props) => {
                         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
                     },
                 }}
+
+                // Close button for the popup
             >
                 <div>
                     {popupData}
