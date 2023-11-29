@@ -9,12 +9,12 @@ const PopupButton = (props) => {
     // Gets the contents of the popup from props
     const popupData = props.popupData;
 
-    // Called to open the popup
+    // Opens the popup
     const openModal = () => {
         setIsModalOpen(true);
     };
 
-    // Called to close the popup
+    // Closes the popup
     const closeModal = () => {
         setIsModalOpen(false);
     };
