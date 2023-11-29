@@ -8,6 +8,8 @@ const ImageCapture = () => {
     const [isWebcamActive, setIsWebcamActive] = useState(false);
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
+    const [file, setFile] = useState(null);
+
 
 
     const captureImage = () => {
@@ -21,40 +23,53 @@ const ImageCapture = () => {
     };
 
 
-    const uploadImage = async () => {
+    const handleFileUpload = async () => {
         const formData = new FormData();
-        formData.append('image', image);
-
+        formData.append('file', file);
 
         try {
-            await axios.post('http://localhost:8000/upload', formData, {
+            const token = localStorage.getItem('token');
+            console.log(token);
+            await fetch('http://localhost:8000/upload', {
+                method: 'POST',
+                body: formData,
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`,
                 },
             });
 
-
-            const userConfirmed = window.confirm('Image captured and uploaded successfully. Do you want to process this data?');
-
+            const userConfirmed = window.confirm('File uploaded successfully. Do you want to process this data?');
 
             if (userConfirmed) {
-                fetch(`http://localhost:8000/process`)
-                    .then(response => {
+                const token = localStorage.getItem('token');
+
+                const requestOptions = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    },
+                };
+
+                fetch('http://localhost:8000/process', requestOptions)
+                    .then((response) => {
                         if (!response.ok) {
                             throw new Error(`HTTP error! Status: ${response.status}`);
                         }
                         return response.json();
                     })
-                    .then(data => {
-                        console.log('Image data processed and saved to main.json');
+                    .then((data) => {
+                        console.log('File uploaded successfully:', data);
+
                     })
-                    .catch(error => {
-                        console.error('Error calling /process:', error.message);
+                    .catch((error) => {
+                        console.error('Error uploading file:', error.message);
                     });
             }
         } catch (error) {
-            console.error('Error uploading image:', error);
+            console.error('Error uploading file:', error);
         }
+            console.log('File uploaded successfully');
     };
 
 
@@ -86,7 +101,7 @@ const ImageCapture = () => {
                 <div>
                     <img src={image} alt="Captured" width="640" height="480" />
                     <button className="button" onClick={retakeImage}>Retake</button>
-                    <button className="button" onClick={uploadImage}>Upload</button>
+                    <button className={'upload'} onClick={handleFileUpload}>Upload</button>
                 </div>
             )}
             {!isWebcamActive && !image && <button className="button" onClick={startVideo}>Start Webcam</button>}
