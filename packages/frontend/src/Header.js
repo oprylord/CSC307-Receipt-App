@@ -19,7 +19,7 @@ function Header() {
             <nav ref={navRef}>
                 <a href="/home">Home</a>
                 <a href="/imageUpload">Image Upload</a>
-                <a href="/#">Image Capture</a>
+                <a href="/imageCapture">Image Capture</a>
                 <a href="/#">History</a>
                 <button
                     className="navigation-button navigation-close-button"
