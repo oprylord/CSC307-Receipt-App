@@ -1,11 +1,15 @@
 .userForm {
-    margin-top: 15px;
+    margin-top: 50px;
     margin-bottom: 15px;
 }
 
 .username {
     height: 40px;
     font-size: 15px;
+    display: inline-block;
+    width: 70%;
+    justify-content: center;
+    margin-right: 10px;
 }
 
 .submitButton {

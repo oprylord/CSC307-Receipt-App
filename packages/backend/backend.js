@@ -2,11 +2,14 @@ import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
 import { readFile } from 'fs/promises';
-import * as dotenv from "dotenv";
-import bcrypt from "bcrypt";
+import * as dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
+import multer from 'multer';
+import path from 'path';
 import fs from 'fs';
 import request from 'request-promise';
 import archiver from 'archiver';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const port = 8000;
@@ -17,7 +20,6 @@ app.use(express.json());
 
 dotenv.config();
 
-// Uncomment the following to debug mongoose queries, etc.
 mongoose.set("debug", true);
 console.log(">>mongo cluster: " + process.env.MONGO_CLUSTER);
 mongoose
@@ -54,17 +56,66 @@ export const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+    console.error('JWT secret is not defined. Set the JWT_SECRET environment variable.');
+    process.exit(1);
+}
+const verifyToken = (req, res, next) => {
+    const token = req.header('Authorization');
+    if (!token) return res.status(401).json({ error: 'Access denied. Token not provided.' });
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(401).json({ error: 'Invalid token.' });
+        req.user = user;
+        next();
+    });
+};
+
 app.get("/receipt", async (req, res) => {
     // Replace 'receipt.json' with the actual path to your JSON file
     try {
         // Read and parse the JSON file using fs/promises
-        const data = await readFile('costcoTest.json', 'utf8');
+        const data = await readFile('main.json', 'utf8');
         const jsonData = JSON.parse(data);
         res.json({ data: jsonData });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error reading JSON file' });
     }});
+
+let relativeFilePath;
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './uploads/'); // Save files to the 'uploads/' directory
+    },
+    filename: function (req, file, cb) {
+        const uniqueFileName = Date.now() + '-' + file.originalname;
+        req.uploadedFileName = uniqueFileName;
+        cb(null, uniqueFileName);
+
+        // Store the relative file path when the file is uploaded
+        relativeFilePath = path.join('./uploads', req.uploadedFileName);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/upload', verifyToken, upload.single('file'), async (req, res) => {
+    const file = req.file;
+
+    if (!file) {
+        return res.status(400).json({error: 'No file provided'});
+    }
+    const fileDetails = {
+        filename: file.filename,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size,
+    };
+    res.status(200).json({ message: 'File uploaded successfully', file: fileDetails });
+});
 
 app.post("/register", async (req, res) => {
     const { username, password, email } = req.body;
@@ -98,7 +149,8 @@ app.post("/login", async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
         if (passwordMatch) {
-            res.json({ message: "Login successful" });
+            const token = jwt.sign({ userId: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            res.json({ message: "Login successful", token });
         } else {
             res.status(401).json({ error: "Incorrect password." });
         }
@@ -108,8 +160,8 @@ app.post("/login", async (req, res) => {
     }
 });
 
-/*app.get("/process", async (req, res) => {
-    const listFiles = ['receipt1.jpg'];
+app.get("/process", verifyToken, async (req, res) => {
+    const listFiles = [relativeFilePath];
     const zipFilePath = 'receipts.zip';
 
     // Create a writable stream to the ZIP file
@@ -158,12 +210,14 @@ app.post("/login", async (req, res) => {
         try {
             // Send the ZIP file to the Veryfi API
             const response = await request(requestOptions);
+            const responseData = typeof response === 'string' ? JSON.parse(response) : response;
+            fs.writeFileSync('./main.json', JSON.stringify(responseData, null, 2));
             console.log('Response from Veryfi:', response);
         } catch (error) {
             console.error('Error:', error);
         }
     });
-});*/
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

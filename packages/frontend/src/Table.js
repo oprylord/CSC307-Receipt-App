@@ -13,12 +13,14 @@ const Table = (props) => {
     const [buttonStates, setButtonStates] = useState(initialStates);
 
     const handleButtonClick = (row, col) => {
+        // When a button is clicked this updates the clicked attribute in the 2d array
         const newButtonStates = [...buttonStates];
         newButtonStates[row][col].clicked = !newButtonStates[row][col].clicked;
         setButtonStates(newButtonStates);
     };
 
     const splitCost = () => {
+        // This method handles the logic of splitting up
         let costs = buttonLabels.map(() => 0);
         for(let i = 0; i < buttonStates.length; i++){
             let numUsers = 0;
@@ -26,16 +28,14 @@ const Table = (props) => {
                 if(buttonStates[i][j].clicked) numUsers++;
             }
 
-            console.log("numUsers: ", numUsers);
             if(numUsers > 0) {
                 let cost = props.jsonData[i].total / numUsers;
-                console.log(props.jsonData[i].total);
                 for (let user = 0; user < buttonLabels.length; user++) {
                     if (buttonStates[i][user].clicked) costs[user] += cost;
                 }
             }
         }
-        console.log(costs);
+
         let retStr = "";
         for(let i = 0; i < buttonLabels.length; i++){
             retStr += buttonLabels[i] + ": " + costs[i] + "\n";
