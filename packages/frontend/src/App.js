@@ -3,15 +3,15 @@ import Table from './Table.js'
 import Header from './Header.js'
 import AddUsers from './AddUsers'
 import LoginSignup from "./LoginSignup";
-import PopUp from './PopUp.js';
 import ImageUpload from './ImageUpload';
+import ImageCapture from './ImageCapture.js'
 import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
-
-let i = 0;
 
 function CreateTable() {
     const [buttonLabels, setButtonLabels] = useState(['User 1', 'User 2', 'User 3']);
     const [jsonData, setJsonData] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
 
     useEffect(() => {
         fetchData()
@@ -23,8 +23,15 @@ function CreateTable() {
     }, []);
 
     const handleInputChange = (newLabel) => {
-        const newButtonLabels = [...buttonLabels];
-        setButtonLabels(newButtonLabels);
+        const updatedLabels = [...buttonLabels];
+
+        if (currentIndex < updatedLabels.length) {
+            updatedLabels[currentIndex] = newLabel;
+        } else {
+            updatedLabels.push(newLabel);
+        }
+        setButtonLabels(updatedLabels);
+        setCurrentIndex(currentIndex + 1);
     };
 
     const Upload = () => {
@@ -35,6 +42,17 @@ function CreateTable() {
             </div>
         );
     };
+
+    const ICAP = () => {
+        return (
+            <div>
+                <Header/>
+                <ImageCapture />
+            </div>
+        )
+    }
+
+
     const HomePage = () => {
         return (
             <div>
@@ -58,6 +76,7 @@ function CreateTable() {
                     element={<PrivateRoute element={<Upload />} />}
                 />
                 <Route path="/history" />
+                <Route path="/imageCapture" element={<ICAP />} />
                 <Route path="/" element={<LoginSignup />} />
                 <Route
                     path="/home"
@@ -69,7 +88,13 @@ function CreateTable() {
 }
 
 function fetchData() {
-    return fetch("http://localhost:8000/receipt");
+    const token = localStorage.getItem('token');
+    return fetch("http://localhost:8000/receipt", {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
 }
 
 export default CreateTable;

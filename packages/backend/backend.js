@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
-import { readFile } from 'fs/promises';
+import {readFile} from 'fs/promises';
 import * as dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import multer from 'multer';
@@ -19,6 +19,8 @@ app.use(cors());
 app.use(express.json());
 
 dotenv.config();
+
+let relativeFilePath;
 
 mongoose.set("debug", true);
 console.log(">>mongo cluster: " + process.env.MONGO_CLUSTER);
@@ -57,25 +59,29 @@ export const UserSchema = new mongoose.Schema({
 const User = mongoose.model('User', UserSchema);
 
 const jwtSecret = process.env.JWT_SECRET;
+
 if (!jwtSecret) {
     console.error('JWT secret is not defined. Set the JWT_SECRET environment variable.');
     process.exit(1);
 }
-const verifyToken = (req, res, next) => {
-    const token = req.header('Authorization');
-    if (!token) return res.status(401).json({ error: 'Access denied. Token not provided.' });
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.status(401).json({ error: 'Invalid token.' });
-        req.user = user;
+const verifyToken = (req, res, next) => {
+    const token = req.header('Authorization').split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized: No token provided' });
+    }
+
+    try {
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
         next();
-    });
+    } catch (err) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
 };
 
-app.get("/receipt", async (req, res) => {
-    // Replace 'receipt.json' with the actual path to your JSON file
+app.get("/receipt", verifyToken, async (req, res) => {
     try {
-        // Read and parse the JSON file using fs/promises
         const data = await readFile('main.json', 'utf8');
         const jsonData = JSON.parse(data);
         res.json({ data: jsonData });
@@ -83,8 +89,6 @@ app.get("/receipt", async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Error reading JSON file' });
     }});
-
-let relativeFilePath;
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -144,8 +148,6 @@ app.post("/login", async (req, res) => {
         if (!existingUser) {
             return res.status(401).json({ error: "User not found, please sign up." });
         }
-
-        // Assuming you are using bcrypt for password hashing
         const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
         if (passwordMatch) {
@@ -164,29 +166,21 @@ app.get("/process", verifyToken, async (req, res) => {
     const listFiles = [relativeFilePath];
     const zipFilePath = 'receipts.zip';
 
-    // Create a writable stream to the ZIP file
     const output = fs.createWriteStream(zipFilePath);
 
-    // Create an archiver object
     const archive = archiver('zip', {
-        zlib: { level: 9 }, // Set compression level
+        zlib: { level: 9 },
     });
 
-    // Pipe the archive to the output stream
     archive.pipe(output);
 
-    // Add files to the ZIP archive
     for (const file of listFiles) {
-        archive.file(file, { name: file }); // Add each file to the ZIP archive
+        archive.file(file, { name: file });
     }
 
-    // Finalize the archive
     archive.finalize();
-
-    // Handle the 'close' event when the ZIP archive is ready
     output.on('close', async () => {
-        // Your code to handle the ZIP archive when it's ready
-        // Configure the request options
+
         const requestOptions = {
             'method': 'POST',
             'uri': 'https://api.veryfi.com/api/v7/partner/documents',
@@ -208,7 +202,6 @@ app.get("/process", verifyToken, async (req, res) => {
         };
 
         try {
-            // Send the ZIP file to the Veryfi API
             const response = await request(requestOptions);
             const responseData = typeof response === 'string' ? JSON.parse(response) : response;
             fs.writeFileSync('./main.json', JSON.stringify(responseData, null, 2));
