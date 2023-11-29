@@ -20,7 +20,6 @@ const Table = (props) => {
     };
 
     const splitCost = () => {
-        // This method handles the logic of splitting up
         let costs = buttonLabels.map(() => 0);
         for(let i = 0; i < buttonStates.length; i++){
             let numUsers = 0;
