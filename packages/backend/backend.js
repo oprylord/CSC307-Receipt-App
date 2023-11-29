@@ -1,9 +1,11 @@
 import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
-import { readFile } from 'fs/promises';
-import * as dotenv from "dotenv";
-import bcrypt from "bcrypt";
+import {readFile} from 'fs/promises';
+import * as dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
+import multer from 'multer';
+import path from 'path';
 import fs from 'fs';
 import request from 'request-promise';
 import archiver from 'archiver';
@@ -17,7 +19,8 @@ app.use(express.json());
 
 dotenv.config();
 
-// Uncomment the following to debug mongoose queries, etc.
+let relativeFilePath;
+
 mongoose.set("debug", true);
 console.log(">>mongo cluster: " + process.env.MONGO_CLUSTER);
 mongoose
@@ -54,17 +57,68 @@ export const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
-app.get("/receipt", async (req, res) => {
-    // Replace 'receipt.json' with the actual path to your JSON file
+const jwtSecret = process.env.JWT_SECRET;
+
+if (!jwtSecret) {
+    console.error('JWT secret is not defined. Set the JWT_SECRET environment variable.');
+    process.exit(1);
+}
+
+const verifyToken = (req, res, next) => {
+    const token = req.header('Authorization').split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized: No token provided' });
+    }
+
     try {
-        // Read and parse the JSON file using fs/promises
-        const data = await readFile('costcoTest.json', 'utf8');
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
+        next();
+    } catch (err) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
+};
+
+app.get("/receipt", verifyToken, async (req, res) => {
+    try {
+        const data = await readFile('main.json', 'utf8');
         const jsonData = JSON.parse(data);
         res.json({ data: jsonData });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error reading JSON file' });
     }});
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './uploads/'); // Save files to the 'uploads/' directory
+    },
+    filename: function (req, file, cb) {
+        const uniqueFileName = Date.now() + '-' + file.originalname;
+        req.uploadedFileName = uniqueFileName;
+        cb(null, uniqueFileName);
+
+        // Store the relative file path when the file is uploaded
+        relativeFilePath = path.join('./uploads', req.uploadedFileName);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/upload', verifyToken, upload.single('file'), async (req, res) => {
+    const file = req.file;
+
+    if (!file) {
+        return res.status(400).json({error: 'No file provided'});
+    }
+    const fileDetails = {
+        filename: file.filename,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size,
+    };
+    res.status(200).json({ message: 'File uploaded successfully', file: fileDetails });
+});
 
 app.post("/register", async (req, res) => {
     const { username, password, email } = req.body;
@@ -94,8 +148,6 @@ app.post("/login", async (req, res) => {
         if (!existingUser) {
             return res.status(401).json({ error: "User not found, please sign up." });
         }
-
-        // Assuming you are using bcrypt for password hashing
         const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
         if (passwordMatch) {
@@ -114,29 +166,21 @@ app.post("/login", async (req, res) => {
     const listFiles = ['receipt1.jpg'];
     const zipFilePath = 'receipts.zip';
 
-    // Create a writable stream to the ZIP file
     const output = fs.createWriteStream(zipFilePath);
 
-    // Create an archiver object
     const archive = archiver('zip', {
-        zlib: { level: 9 }, // Set compression level
+        zlib: { level: 9 },
     });
 
-    // Pipe the archive to the output stream
     archive.pipe(output);
 
-    // Add files to the ZIP archive
     for (const file of listFiles) {
-        archive.file(file, { name: file }); // Add each file to the ZIP archive
+        archive.file(file, { name: file });
     }
 
-    // Finalize the archive
     archive.finalize();
-
-    // Handle the 'close' event when the ZIP archive is ready
     output.on('close', async () => {
-        // Your code to handle the ZIP archive when it's ready
-        // Configure the request options
+
         const requestOptions = {
             'method': 'POST',
             'uri': 'https://api.veryfi.com/api/v7/partner/documents',
@@ -158,7 +202,6 @@ app.post("/login", async (req, res) => {
         };
 
         try {
-            // Send the ZIP file to the Veryfi API
             const response = await request(requestOptions);
             console.log('Response from Veryfi:', response);
         } catch (error) {
