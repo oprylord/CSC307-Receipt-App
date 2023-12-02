@@ -62,6 +62,20 @@ const Table = (props) => {
         setButtonStates(newButtonStates);
     };
 
+    const clear = () => {
+        // When a button is clicked this updates the clicked attribute in the 2d array
+        /*const newButtonStates = [...buttonStates];
+        for(let row = 0; row < buttonStates.length; row++) {
+            for(let col = 0; col < buttonStates[row].length; col++) {
+                newButtonStates[row][col].clicked = true;
+            }
+        }*/
+        const newButtonStates = props.jsonData.map(() =>
+            buttonLabels.map(() => ({ clicked: false }))
+        );
+        setButtonStates(newButtonStates);
+    };
+
     // Table body
     const rows = props.jsonData.map((row, rowIndex) => {
             return (
@@ -101,12 +115,21 @@ const Table = (props) => {
         )
     }
 
+    const ClearButton = (props) => {
+        return(
+            <button onClick={clear} >
+                Clear all selections
+            </button>
+        )
+    }
+
     return (
         // Table headers and popup which calls splitCost each time a button state is updated
         // popup is only displayed when clicked on
         <div className={"container"}>
             <table>
                 <SplitEvenButton />
+                <ClearButton />
                 <thead className={"header"}>
                 <tr className={"headerRow"}>
                     <th className={"header1"}>Name</th>
