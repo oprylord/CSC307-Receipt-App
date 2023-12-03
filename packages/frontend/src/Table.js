@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import "./CSS Files/Table.css"
 import PopUp from "./PopUp";
+import "./CSS Files/TopButtons.css";
 
 const Table = (props) => {
 
@@ -107,19 +108,16 @@ const Table = (props) => {
         }
     );
 
-    const SplitEvenButton = (props) => {
+    const TopButtons = () => {
         return(
-            <button onClick={splitEvenly} >
-                Split all items evenly
-            </button>
-        )
-    }
-
-    const ClearButton = (props) => {
-        return(
-            <button onClick={clear} >
-                Clear all selections
-            </button>
+            <div className="button-container">
+                <button onClick={splitEvenly} className="split-even">
+                    Split all items evenly
+                </button>
+                <button onClick={clear} className="clear-button">
+                    Clear all selections
+                </button>
+            </div>
         )
     }
 
@@ -128,8 +126,8 @@ const Table = (props) => {
         // popup is only displayed when clicked on
         <div className={"container"}>
             <table>
-                <SplitEvenButton />
-                <ClearButton />
+
+                <TopButtons />
                 <thead className={"header"}>
                 <tr className={"headerRow"}>
                     <th className={"header1"}>Name</th>
