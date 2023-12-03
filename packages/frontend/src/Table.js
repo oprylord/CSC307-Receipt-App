@@ -77,6 +77,14 @@ const Table = (props) => {
         setButtonStates(newButtonStates);
     };
 
+    const selectAllUser = (userIndex) => {
+        const newButtonStates = [...buttonStates];
+        for(let row = 0; row < buttonStates.length; row++){
+            newButtonStates[row][userIndex] = true;
+        }
+        setButtonStates(newButtonStates);
+    };
+
     // Table body
     const rows = props.jsonData.map((row, rowIndex) => {
             return (
@@ -117,6 +125,28 @@ const Table = (props) => {
                 <button onClick={clear} className="clear-button">
                     Clear all selections
                 </button>
+            </div>
+        )
+    }
+
+    const UserSelectAll = () => {
+        return(
+            <div className="user-select-all-container">
+                {buttonLabels.map((label, i) => (
+                    <button
+                        key={i}
+                        className={"tableButton"}
+                        //style={{
+                            // Toggle the button color based on whether it has been clicked
+                            //>backgroundColor: buttonStates[rowIndex][i].clicked ? "#2980b9" : 'lightblue',
+                            //>transform: buttonStates[rowIndex][i].clicked ? "scale(0.95)" : "scale(1)",
+                        //}}
+                        // When a button is clicked, toggle it's state by calling the handler
+                        onClick={() => selectAllUser(i)}
+                    >
+                        Select all
+                    </button>
+                ))}
             </div>
         )
     }
