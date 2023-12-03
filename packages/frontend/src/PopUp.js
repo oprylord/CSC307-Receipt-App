@@ -3,9 +3,9 @@ import Modal from 'react-modal';
 import "./CSS Files/PopUp.css";
 
 
-const PopupButton = () => {
+const PopupButton = (props) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const popupData = "Hello, this is data for the modal!";
+    const popupData = props.popupData;
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -18,6 +18,8 @@ const PopupButton = () => {
     useEffect(() => {
         Modal.setAppElement('#root');
     }, []);
+
+    console.log(popupData);
 
     return (
         <div>
@@ -34,19 +36,25 @@ const PopupButton = () => {
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     },
                     content: {
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         maxWidth: '400px',
                         margin: 'auto',
                         padding: '20px',
                         backgroundColor: '#fff',
-                        borderRadius: '5px',
-                        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                        borderRadius: '10px',
+                        boxShadow: '0 0 20px rgba(0, 0, 0, 0.2)',
                     },
                 }}
             >
                 <div>
-                    {popupData}
-                    <button onClick={closeModal}>
-                        Close Popup
+                    {popupData.map((item, index) => (
+                        <div key={index} className='modalText'>{item}</div>
+                    ))}
+                    <button onClick={closeModal} className='closeButton'>
+                        X
                     </button>
                 </div>
             </Modal>

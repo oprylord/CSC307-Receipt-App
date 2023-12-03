@@ -10,3 +10,43 @@
 .popupOverlay {
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+.calculate {
+    margin-left: 10px;
+    margin-right: 10px;
+    border: none;
+    height: 75px;
+    width: 120px;
+    font-size: 20px;
+    background-color: lightblue;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.modalContainer {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.closeButton {
+    position: absolute;
+    top: 0;
+    right: 15px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 50px;
+    font-weight: bold;
+    color: #333;
+}
+
+.modalText {
+    margin-bottom: 10px;
+    font-size: 40px;
+    color: #333;
+}
