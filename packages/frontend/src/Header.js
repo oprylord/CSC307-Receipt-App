@@ -1,12 +1,18 @@
 import React from "react";
+import { useRef } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
+import "./CSS Files/Header.css";
 
 function Header() {
-    const headerStyle = {
-        backgroundColor: 'lightblue',
-        padding: '10px',
-        textAlign: 'center',
-        fontFamily: 'Roboto, sans-serif'
+
+    const navRef = useRef();
+
+    const showNavbar = () => {
+        navRef.current.classList.toggle(
+            "responsive_nav"
+        );
     };
+
     return (
         <header>
             <h3>QuickSplit</h3>
@@ -21,7 +27,11 @@ function Header() {
                     <FaTimes />
                 </button>
             </nav>
-            <h1>Receipt Scanner</h1>
+            <button
+                className="navigation-button"
+                onClick={showNavbar}>
+                <FaBars />
+            </button>
         </header>
     );
 }
