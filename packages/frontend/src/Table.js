@@ -19,6 +19,27 @@ const Table = (props) => {
         setButtonStates(newButtonStates);
     };
 
+    const toggleRow = (row) => {
+        // Selects every user for an item (sets them all to clicked = true)
+        // If all users are already selected, unselects every user instead (clicked = false).
+        const newButtonStates = [...buttonStates];
+        var setState = (newButtonStates[row].length == 
+                        newButtonStates[row].reduce((count,state) => count + (state.clicked ? 1 : 0),0)
+                        ? false : true)
+        for(let x = 0; x < newButtonStates[row].length; x++){
+            newButtonStates[row][x].clicked = setState;
+        }
+        setButtonStates(newButtonStates);            
+    };
+
+    const removeItem = (row) => {
+        // deletes an item from the table and updates relevant variables accordingly
+        const newButtonStates = [...buttonStates];
+        props.jsonData.splice(row,1)
+        newButtonStates.splice(row,1);
+        setButtonStates(newButtonStates);
+    }
+
     const splitCost = () => {
         // This method handles the logic of splitting up the receipt
         let costs = buttonLabels.map(() => 0);
@@ -40,10 +61,10 @@ const Table = (props) => {
             }
         }
 
-        // Creating and returning a string of the final results
-        let retStr = "";
+        // Creating and returning an array of strings detailing the final results
+        let retStr = [];
         for(let i = 0; i < buttonLabels.length; i++){
-            retStr += buttonLabels[i] + ": " + costs[i] + "\n";
+            retStr[i] = buttonLabels[i] + ": " + costs[i] + "\n";
         }
         return retStr;
     }
@@ -72,6 +93,23 @@ const Table = (props) => {
                                     {label}
                                 </button>
                             ))}
+                        </div>
+                    </td>
+                    <td>
+                        <div style={ {display: "inline-table"} }>
+                        <button 
+                        className={"tableButton"}
+                        onClick={() => toggleRow(rowIndex)} > Select All </button>
+                        </div>
+                    </td>
+                    <td>
+                        <div style={ {display: "inline-table"} }>
+                        <button 
+                        className={"tableButton"}
+                        style={{
+                            backgroundColor: 'red',
+                        }} 
+                        onClick={() => removeItem(rowIndex)} > Delete </button>
                         </div>
                     </td>
                 </tr>

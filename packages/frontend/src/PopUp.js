@@ -50,7 +50,7 @@ const PopupButton = (props) => {
 
                 // Close button for the popup
             >
-                <div>
+                <div className = "popupText">
                     {popupData}
                     <button onClick={closeModal} className='closeButton'>
                         X
