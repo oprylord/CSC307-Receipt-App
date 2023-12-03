@@ -1,5 +1,35 @@
 import React, {useState} from "react";
 import './CSS Files/LoginSignup.css'
+import { useNavigate} from "react-router-dom";
+
+const LoginClick = async ({ email, password, onLogin, setErrors, navigate }) => {
+    try {
+        const data = { email, password };
+        const response = await fetch("http://localhost:8000/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            const responseData = await response.json();
+            console.log(responseData.message);
+            localStorage.setItem('token', responseData.token);
+            navigate('/home');
+            onLogin(responseData.token);
+        } else {
+            const errorData = await response.json();
+            console.error(errorData.error); // Error message from the server
+            setErrors([errorData.error]);
+        }
+    } catch (error) {
+        console.error("An error occurred:", error);
+        // Handle network or other unexpected errors.
+    }
+};
+
 
 const LoginSignup = ({ onLogin }) => {
     const [action, setAction] = useState("Sign Up");
@@ -7,37 +37,19 @@ const LoginSignup = ({ onLogin }) => {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
     const [errors, setErrors] = useState([]);
+    const navigate = useNavigate();
 
-    const handleLoginClick = async () => {
-        try {
-            const data = { email, password };
-            const response = await fetch("https://quicksplit.azurewebsites.net/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (response.ok) {
-                const responseData = await response.json();
-                console.log(responseData.message);
-                onLogin();
-            } else {
-                const errorData = await response.json();
-                console.error(errorData.error); // Error message from the server
-                setErrors([errorData.error]);
-            }
-        } catch (error) {
-            console.error("An error occurred:", error);
-            // Handle network or other unexpected errors.
-        }
+    /*const handleLoginClick = async () => {
+        useLoginClick({ email, password, onLogin, setErrors });
+    };*/
+    const handleLoginClick = () => {
+        LoginClick({ email, password, onLogin, setErrors, navigate });
     };
 
     const handleSignUpClick = async () => {
         try {
             const data = { username, password, email };
-            const response = await fetch("https://quicksplit.azurewebsites.net/register", {
+            const response = await fetch("http://localhost:8000/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -47,7 +59,7 @@ const LoginSignup = ({ onLogin }) => {
             if (response.ok) {
                 const responseData = await response.json();
                 console.log(responseData.message);
-                onLogin();
+                onLogin(responseData.token);
             } else {
                 const errorData = await response.json();
                 console.error(errorData.error); // Error message from the server

@@ -24,9 +24,9 @@ const PopupButton = (props) => {
     }, []);
 
     return (
-        <div>
-            <button onClick={openModal}>
-                Open Popup
+        <div className="modalContainer">
+            <button onClick={openModal} className='calculate'>
+                Submit
             </button>
 
             <Modal

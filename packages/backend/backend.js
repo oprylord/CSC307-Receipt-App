@@ -9,6 +9,7 @@ import path from 'path';
 import fs from 'fs';
 import request from 'request-promise';
 import archiver from 'archiver';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const port = 8000;
@@ -134,7 +135,6 @@ app.post("/register", async (req, res) => {
         }
     } catch (err) {
         console.error("Error:", err);
-        console.log(err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -151,19 +151,19 @@ app.post("/login", async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
         if (passwordMatch) {
-            res.json({ message: "Login successful" });
+            const token = jwt.sign({ userId: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            res.json({ message: "Login successful", token });
         } else {
             res.status(401).json({ error: "Incorrect password." });
         }
     } catch (err) {
         console.error("Error:", err);
-        console.log(err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-/*app.get("/process", async (req, res) => {
-    const listFiles = ['receipt1.jpg'];
+app.get("/process", verifyToken, async (req, res) => {
+    const listFiles = [relativeFilePath];
     const zipFilePath = 'receipts.zip';
 
     const output = fs.createWriteStream(zipFilePath);
@@ -203,13 +203,16 @@ app.post("/login", async (req, res) => {
 
         try {
             const response = await request(requestOptions);
+            const responseData = typeof response === 'string' ? JSON.parse(response) : response;
+            fs.writeFileSync('./main.json', JSON.stringify(responseData, null, 2));
             console.log('Response from Veryfi:', response);
         } catch (error) {
             console.error('Error:', error);
         }
     });
-});*/
+});
 
 app.listen(process.env.PORT || port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
