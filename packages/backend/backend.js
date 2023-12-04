@@ -91,9 +91,8 @@ const verifyToken = (req, res, next) => {
 };
 
 app.get("/receipt", verifyToken, async (req, res) => {
-    //const userEmail = req.user?.email; // Access the user's email from the authenticated user
-    console.log(userEmail);
     if (!userEmail) {
+        console.log("No email");
         return res.status(500).json({ error: 'User email not available' });
     }
 
@@ -106,9 +105,8 @@ app.get("/receipt", verifyToken, async (req, res) => {
         const jsonData = JSON.parse(data);
         res.json({ data: jsonData });
     } catch (err) {
-        console.error(err);
-
         if (err.code === 'ENOENT') {
+            console.log("Please upload an image first");
             res.status(500).json({ error: 'Please upload an image first' });
         } else {
             res.status(500).json({ error: 'Error reading JSON file' });

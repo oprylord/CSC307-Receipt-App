@@ -4,10 +4,6 @@ import PopUp from "./PopUp";
 
 const Table = (props) => {
 
-    if (!props.jsonData || !props.buttonLabels) {
-        return <div>Loading...</div>; // or handle this case accordingly
-    }
-
     console.log('jsonData:', props.jsonData);
     console.log('buttonLabels:', props.buttonLabels);
 

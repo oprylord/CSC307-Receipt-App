@@ -1,7 +1,7 @@
 import React, {useRef, useState} from 'react';
 import './CSS Files/ImageUpload.css';
 
-const ImageUpload = ({ loading, setLoading }) => {
+const ImageUpload = () => {
         const [file, setFile] = useState(null);
         const fileInputRef = useRef(null);
 
@@ -30,7 +30,7 @@ const ImageUpload = ({ loading, setLoading }) => {
 
                 if (userConfirmed) {
                     const token = localStorage.getItem('token');
-
+                    console.log("Getting docs")
                     const requestOptions = {
                         method: 'GET',
                         headers: {
@@ -38,13 +38,11 @@ const ImageUpload = ({ loading, setLoading }) => {
                             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                         },
                     };
-                    setLoading(true);
                     fetch('http://localhost:8000/process', requestOptions)
                         .then((response) => {
                             if (!response.ok) {
                                 throw new Error(`HTTP error! Status: ${response.status}`);
                             }
-                            setLoading(false);
                             return response.json();
                         })
                         .then((data) => {
