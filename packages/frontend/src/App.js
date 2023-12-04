@@ -59,7 +59,7 @@ function CreateTable() {
     const Upload = () => {
         return (
             <div>
-                <Header />
+                <Header error={errorMessage}/>
                 <ImageUpload />
             </div>
         );
@@ -68,7 +68,7 @@ function CreateTable() {
     const HomePage = () => {
         return (
             <div>
-                <Header />
+                <Header error={errorMessage}/>
                 {errorMessage ? (
                     <div style={{ color: 'red', margin: 'auto', maxWidth: '400px', marginTop: '10px' }}>
                         <p>{errorMessage}</p>

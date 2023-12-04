@@ -231,6 +231,7 @@ app.get("/process", verifyToken, async (req, res) => {
             const response = await request(requestOptions);
             const responseData = typeof response === 'string' ? JSON.parse(response) : response;
             fs.writeFileSync(`./JSONuploads/${userEmail}.json`, JSON.stringify(responseData, null, 2));
+            res.status(200).json({ message: 'File processed successfully' });
         } catch (error) {
             console.error('Error:', error);
         }
