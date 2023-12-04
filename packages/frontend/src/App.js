@@ -1,60 +1,36 @@
-import React, {useState, useEffect} from 'react';
-import Table from './Table.js'
+import React, {useState} from 'react';
 import Header from './Header.js'
-import AddUsers from './AddUsers'
 import LoginSignup from "./LoginSignup";
 import ImageUpload from './ImageUpload';
+import HomePage from './HomePage';
 import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
 
 function CreateTable() {
-    const [buttonLabels, setButtonLabels] = useState(['User 1', 'User 2', 'User 3']);
-    const [jsonData, setJsonData] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
 
-
-    useEffect(() => {
-        fetchData()
-            .then((res) => res.json())
-            .then((json) => setJsonData(json["data"]["line_items"]))
-            .catch((error) => {
-                console.log(error);
-            });
-    }, []);
-
-    const handleInputChange = (newLabel) => {
-        const updatedLabels = [...buttonLabels];
-
-        if (currentIndex < updatedLabels.length) {
-            updatedLabels[currentIndex] = newLabel;
-        } else {
-            updatedLabels.push(newLabel);
-        }
-        setButtonLabels(updatedLabels);
-        setCurrentIndex(currentIndex + 1);
-    };
 
     const Upload = () => {
         return (
             <div>
                 <Header />
-                <ImageUpload />
-            </div>
-        );
-    };
-
-    const HomePage = () => {
-        return (
-            <div>
-                <Header />
-                <AddUsers onInputChange={handleInputChange} />
-                <Table jsonData={jsonData} buttonLabels={buttonLabels} />
+                <ImageUpload loading={loading} setLoading={setLoading} />
             </div>
         );
     };
 
     const PrivateRoute = ({ element }) => {
         const token = localStorage.getItem('token');
-        return token ? element : <Navigate to="/" />;
+
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            if (decodedToken.exp * 1000 > Date.now()) {
+                return element;
+            }
+        }
+
+        // Redirect to the login page if either token or email is missing
+        return <Navigate to="/" />;
     };
 
     return (
@@ -73,16 +49,6 @@ function CreateTable() {
             </Routes>
         </Router>
     );
-}
-
-function fetchData() {
-    const token = localStorage.getItem('token');
-    return fetch("http://localhost:8000/receipt", {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-        },
-    });
 }
 
 export default CreateTable;

@@ -1,9 +1,11 @@
 import React, {useRef, useState} from 'react';
 import './CSS Files/ImageUpload.css';
 
-const ImageUpload = () => {
+const ImageUpload = ({ loading, setLoading }) => {
         const [file, setFile] = useState(null);
         const fileInputRef = useRef(null);
+
+        //setLoading(true);
 
         const handleFileChange = (e) => {
             setFile(e.target.files[0]);
@@ -36,12 +38,13 @@ const ImageUpload = () => {
                             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                         },
                     };
-
+                    setLoading(true);
                     fetch('http://localhost:8000/process', requestOptions)
                         .then((response) => {
                             if (!response.ok) {
                                 throw new Error(`HTTP error! Status: ${response.status}`);
                             }
+                            setLoading(false);
                             return response.json();
                         })
                         .then((data) => {

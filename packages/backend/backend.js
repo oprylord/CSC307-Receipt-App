@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
 import {readFile} from 'fs/promises';
+import fsPromises from 'fs/promises';
 import * as dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import multer from 'multer';
@@ -21,6 +22,7 @@ app.use(express.json());
 dotenv.config();
 
 let relativeFilePath;
+let userEmail;
 
 mongoose.set("debug", true);
 console.log(">>mongo cluster: " + process.env.MONGO_CLUSTER);
@@ -54,6 +56,14 @@ export const UserSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    files: [
+        {
+            filename: String,
+            contentType: String,
+            size: Number,
+            uploadDate: Date,
+        },
+    ],
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -81,14 +91,30 @@ const verifyToken = (req, res, next) => {
 };
 
 app.get("/receipt", verifyToken, async (req, res) => {
+    //const userEmail = req.user?.email; // Access the user's email from the authenticated user
+    console.log(userEmail);
+    if (!userEmail) {
+        return res.status(500).json({ error: 'User email not available' });
+    }
+
+    const filePath = `./JSONuploads/${userEmail}.json`;
+
     try {
-        const data = await readFile('main.json', 'utf8');
+        await fsPromises.access(filePath, fsPromises.constants.F_OK);
+
+        const data = await fsPromises.readFile(filePath, 'utf8');
         const jsonData = JSON.parse(data);
         res.json({ data: jsonData });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Error reading JSON file' });
-    }});
+
+        if (err.code === 'ENOENT') {
+            res.status(500).json({ error: 'Please upload an image first' });
+        } else {
+            res.status(500).json({ error: 'Error reading JSON file' });
+        }
+    }
+});
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -131,6 +157,7 @@ app.post("/register", async (req, res) => {
             const hashedPassword = await bcrypt.hash(password, saltRounds);
             const user = new User({ username, password: hashedPassword, email });
             await user.save();
+            userEmail = email;
             res.json({ message: 'User registered successfully' });
         }
     } catch (err) {
@@ -152,6 +179,7 @@ app.post("/login", async (req, res) => {
 
         if (passwordMatch) {
             const token = jwt.sign({ userId: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            userEmail = email;
             res.json({ message: "Login successful", token });
         } else {
             res.status(401).json({ error: "Incorrect password." });
@@ -204,8 +232,7 @@ app.get("/process", verifyToken, async (req, res) => {
         try {
             const response = await request(requestOptions);
             const responseData = typeof response === 'string' ? JSON.parse(response) : response;
-            fs.writeFileSync('./main.json', JSON.stringify(responseData, null, 2));
-            console.log('Response from Veryfi:', response);
+            fs.writeFileSync(`./JSONuploads/${userEmail}.json`, JSON.stringify(responseData, null, 2));
         } catch (error) {
             console.error('Error:', error);
         }

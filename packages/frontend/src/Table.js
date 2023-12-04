@@ -4,12 +4,20 @@ import PopUp from "./PopUp";
 
 const Table = (props) => {
 
+    if (!props.jsonData || !props.buttonLabels) {
+        return <div>Loading...</div>; // or handle this case accordingly
+    }
+
+    console.log('jsonData:', props.jsonData);
+    console.log('buttonLabels:', props.buttonLabels);
+
     const { buttonLabels } = props;
 
 
     const initialStates = props.jsonData.map(() =>
-        buttonLabels.map(() => ({ clicked: false }))
+        props.buttonLabels.map(() => ({ clicked: false }))
     );
+    console.log("Init" + initialStates);
 
     const [buttonStates, setButtonStates] = useState(initialStates);
 
@@ -36,7 +44,6 @@ const Table = (props) => {
                 }
             }
         }
-        console.log(costs);
         let retStr = [];
         for(let i = 0; i < buttonLabels.length; i++){
             retStr.push(buttonLabels[i] + ': ' + '$' + Number(costs[i].toFixed(2)));
