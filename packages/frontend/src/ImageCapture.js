@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import axios from 'axios';
 import './CSS Files/ImageCapture.css';
 
 
@@ -24,53 +23,48 @@ const ImageCapture = () => {
 
 
     const handleFileUpload = async () => {
+        const fetchResponse = await fetch(image);
+        const blob = await fetchResponse.blob();
         const formData = new FormData();
-        formData.append('file', file);
-
+        formData.append('file', blob, 'image.png');
+    
         try {
             const token = localStorage.getItem('token');
             console.log(token);
-            await fetch('http://localhost:8000/upload', {
+            const uploadResponse = await fetch('http://localhost:8000/upload', {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-
+    
+            if (!uploadResponse.ok) {
+                throw new Error(`HTTP error! Status: ${uploadResponse.status}`);
+            }
+    
             const userConfirmed = window.confirm('File uploaded successfully. Do you want to process this data?');
-
+    
             if (userConfirmed) {
-                const token = localStorage.getItem('token');
-
-                const requestOptions = {
-                    method: 'GET',
+                const processResponse = await fetch('http://localhost:8000/process', {
+                    method: 'POST',
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                        'Authorization': `Bearer ${token}`,
                     },
-                };
-
-                fetch('http://localhost:8000/process', requestOptions)
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then((data) => {
-                        console.log('File uploaded successfully:', data);
-
-                    })
-                    .catch((error) => {
-                        console.error('Error uploading file:', error.message);
-                    });
+                });
+    
+                if (!processResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${processResponse.status}`);
+                }
+    
+                const data = await processResponse.json();
+                console.log('File processed successfully:', data);
             }
         } catch (error) {
             console.error('Error uploading file:', error);
         }
-            console.log('File uploaded successfully');
     };
+    ;
 
 
     const startVideo = () => {

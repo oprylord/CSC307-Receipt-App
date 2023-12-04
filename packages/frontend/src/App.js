@@ -4,7 +4,8 @@ import Header from './Header.js'
 import AddUsers from './AddUsers'
 import LoginSignup from "./LoginSignup";
 import ImageUpload from './ImageUpload';
-import ImageCapture from './ImageCapture.js'
+import ImageCapture from './ImageCapture';
+import History from './History.js';
 import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom';
 
 function CreateTable() {
@@ -52,6 +53,14 @@ function CreateTable() {
         )
     }
 
+    const HistoryPage = () => {
+        return (
+            <div>
+                <Header/>
+                <History />
+            </div>
+        )
+    }
 
     const HomePage = () => {
         return (
@@ -75,8 +84,8 @@ function CreateTable() {
                     path="/imageUpload"
                     element={<PrivateRoute element={<Upload />} />}
                 />
-                <Route path="/history" />
-                <Route path="/imageCapture" element={<ICAP />} />
+                <Route path="/history" element={<HistoryPage />} />
+                <Route path="/imageCapture" element={<PrivateRoute element={<ICAP />}/>} />
                 <Route path="/" element={<LoginSignup />} />
                 <Route
                     path="/home"
