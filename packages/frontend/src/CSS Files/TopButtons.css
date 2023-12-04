@@ -1,0 +1,18 @@
+.button-container {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 20px; /* Spacing between buttons */
+    justify-content: center;
+    align-content: center;
+    height: 100%;
+}
+
+.clear-button, .split-even {
+    max-width: 600px;
+    margin: auto;
+    padding: 10px 20px;
+    background-color: lightblue;
+    border: 1px solid lightblue;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+}
