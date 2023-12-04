@@ -187,6 +187,28 @@ app.post("/login", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+const popupDataSchema = new mongoose.Schema({
+    // Define the schema based on the data structure of your popup
+    // Example:
+    date: { type: Date, required: true },
+    content: { type: String, required: true },
+    // Add other fields as necessary
+});
+
+const PopupData = mongoose.model('PopupData', popupDataSchema);
+
+app.post('/savePopupData', verifyToken, async (req, res) => {
+    try {
+        const newPopupData = new PopupData(req.body); // Create a new instance of PopupData model with request body data
+        await newPopupData.save(); // Save the new instance to the database
+
+        res.status(200).json({ message: 'Popup data saved successfully' });
+    } catch (err) {
+        console.error('Error saving popup data:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 app.get("/process", verifyToken, async (req, res) => {
     const listFiles = [relativeFilePath];
@@ -237,6 +259,17 @@ app.get("/process", verifyToken, async (req, res) => {
         }
     });
 });
+
+app.get('/getPopupData', verifyToken, async (req, res) => {
+    try {
+        const popupData = await PopupData.find({}); // Fetch all documents from PopupData collection
+        res.json(popupData);
+    } catch (err) {
+        console.error('Error fetching popup data:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

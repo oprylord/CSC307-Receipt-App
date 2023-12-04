@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import "./CSS Files/Header.css";
 
-function Header({ error }) {
+function Header() {
 
     const navRef = useRef();
 
@@ -19,9 +19,8 @@ function Header({ error }) {
             <nav ref={navRef}>
                 <a href="/home">Home</a>
                 <a href="/imageUpload">Image Upload</a>
-                <a href="/#">Image Capture</a>
-                <a href="/#">History</a>
-                {error && error === 'User email is not available. Please log in again.' && <a href="/">Login</a>}
+                <a href="/imageCapture">Image Capture</a>
+                <a href="/history">History</a>
                 <button
                     className="navigation-button navigation-close-button"
                     onClick={showNavbar}>
