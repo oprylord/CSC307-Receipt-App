@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import "./CSS Files/Table.css"
 import PopUp from "./PopUp";
+import "./CSS Files/TopButtons.css";
 
 const Table = (props) => {
 
@@ -48,6 +49,22 @@ const Table = (props) => {
         return retStr;
     }
 
+    const splitEvenly = () => {
+        // When a button is clicked this updates the clicked attribute in the 2d array
+        const newButtonStates = props.jsonData.map(() =>
+            buttonLabels.map(() => ({ clicked: true }))
+        );
+        setButtonStates(newButtonStates);
+    };
+
+    const clear = () => {
+        // When a button is clicked this updates the clicked attribute in the 2d array
+        const newButtonStates = props.jsonData.map(() =>
+            buttonLabels.map(() => ({ clicked: false }))
+        );
+        setButtonStates(newButtonStates);
+    };
+
     // Table body
     const rows = props.jsonData.map((row, rowIndex) => {
             return (
@@ -79,11 +96,26 @@ const Table = (props) => {
         }
     );
 
+    const TopButtons = () => {
+        return(
+            <div className="button-container">
+                <button onClick={splitEvenly} className="split-even">
+                    Split all items evenly
+                </button>
+                <button onClick={clear} className="clear-button">
+                    Clear all selections
+                </button>
+            </div>
+        )
+    }
+
     return (
         // Table headers and popup which calls splitCost each time a button state is updated
         // popup is only displayed when clicked on
         <div className={"container"}>
             <table>
+
+                <TopButtons />
                 <thead className={"header"}>
                 <tr className={"headerRow"}>
                     <th className={"header1"}>Name</th>
