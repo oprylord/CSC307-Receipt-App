@@ -5,7 +5,7 @@ import { useNavigate} from "react-router-dom";
 const LoginClick = async ({ email, password, onLogin, setErrors, navigate }) => {
     try {
         const data = { email, password };
-        const response = await fetch("http://localhost:8000/login", {
+        const response = await fetch("http://https://quicksplit.azurewebsites.net/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -49,7 +49,7 @@ const LoginSignup = ({ onLogin }) => {
     const handleSignUpClick = async () => {
         try {
             const data = { username, password, email };
-            const response = await fetch("http://localhost:8000/register", {
+            const response = await fetch("http://https://quicksplit.azurewebsites.net/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
