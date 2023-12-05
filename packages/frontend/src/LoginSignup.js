@@ -59,6 +59,7 @@ const LoginSignup = ({ onLogin }) => {
             if (response.ok) {
                 const responseData = await response.json();
                 console.log(responseData.message);
+                localStorage.setItem('token', responseData.token);
                 onLogin(responseData.token);
             } else {
                 const errorData = await response.json();
