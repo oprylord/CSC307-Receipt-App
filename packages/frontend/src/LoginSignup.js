@@ -2,6 +2,8 @@ import React, {useState} from "react";
 import './CSS Files/LoginSignup.css'
 import { useNavigate} from "react-router-dom";
 
+//Fix the registration endpoint so it works
+
 const LoginClick = async ({ email, password, onLogin, setErrors, navigate }) => {
     try {
         const data = { email, password };
@@ -18,7 +20,7 @@ const LoginClick = async ({ email, password, onLogin, setErrors, navigate }) => 
             console.log(responseData.message);
             localStorage.setItem('token', responseData.token);
             navigate('/home');
-            onLogin(responseData.token);
+            //onLogin(responseData.token);
         } else {
             const errorData = await response.json();
             console.error(errorData.error); // Error message from the server
