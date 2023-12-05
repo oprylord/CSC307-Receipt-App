@@ -3,6 +3,8 @@
 # dependencies
 node_modules
 /packages/frontend/node_modules
+packages/backend/uploads
+packages/backend/JSONuploads
 /packages/backend/node_modules
 /.pnp
 .pnp.js
