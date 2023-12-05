@@ -2,9 +2,7 @@ import React, {useState} from "react";
 import './CSS Files/LoginSignup.css'
 import { useNavigate} from "react-router-dom";
 
-//Fix the registration endpoint so it works
-
-const LoginClick = async ({ email, password, onLogin, setErrors, navigate }) => {
+const LoginClick = async ({ email, password, setErrors, navigate }) => {
     try {
         const data = { email, password };
         const response = await fetch("http://localhost:8000/login", {
@@ -20,7 +18,6 @@ const LoginClick = async ({ email, password, onLogin, setErrors, navigate }) => 
             console.log(responseData.message);
             localStorage.setItem('token', responseData.token);
             navigate('/home');
-            //onLogin(responseData.token);
         } else {
             const errorData = await response.json();
             console.error(errorData.error); // Error message from the server
@@ -28,12 +25,36 @@ const LoginClick = async ({ email, password, onLogin, setErrors, navigate }) => 
         }
     } catch (error) {
         console.error("An error occurred:", error);
-        // Handle network or other unexpected errors.
     }
 };
 
+const SignUpClick = async ({username, email, password, setErrors, navigate}) => {
+    try {
+        const data = { username, password, email };
+        const response = await fetch("http://localhost:8000/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+        if (response.ok) {
+            const responseData = await response.json();
+            console.log(responseData.message);
+            localStorage.setItem('token', responseData.token);
+            navigate('/home');
+        } else {
+            const errorData = await response.json();
+            console.error(errorData.error); // Error message from the server
+            setErrors([errorData.error]);
+        }
+    } catch (error) {
+        console.error("An error occurred:", error);
+    }
+}
 
-const LoginSignup = ({ onLogin }) => {
+
+const LoginSignup = () => {
     const [action, setAction] = useState("Sign Up");
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -41,36 +62,12 @@ const LoginSignup = ({ onLogin }) => {
     const [errors, setErrors] = useState([]);
     const navigate = useNavigate();
 
-    /*const handleLoginClick = async () => {
-        useLoginClick({ email, password, onLogin, setErrors });
-    };*/
     const handleLoginClick = () => {
-        LoginClick({ email, password, onLogin, setErrors, navigate });
+        LoginClick({ email, password, setErrors, navigate });
     };
 
-    const handleSignUpClick = async () => {
-        try {
-            const data = { username, password, email };
-            const response = await fetch("http://localhost:8000/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-            if (response.ok) {
-                const responseData = await response.json();
-                console.log(responseData.message);
-                onLogin(responseData.token);
-            } else {
-                const errorData = await response.json();
-                console.error(errorData.error); // Error message from the server
-                setErrors([errorData.error]);
-            }
-        } catch (error) {
-            console.error("An error occurred:", error);
-            // Handle network or other unexpected errors.
-        }
+    const handleSignUpClick = () => {
+        SignUpClick({username, email, password, setErrors, navigate})
     }
 
     const handleUsernameChange = (e) => {

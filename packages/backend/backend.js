@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
-import {readFile} from 'fs/promises';
 import fsPromises from 'fs/promises';
 import * as dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
@@ -156,7 +155,8 @@ app.post("/register", async (req, res) => {
             const user = new User({ username, password: hashedPassword, email });
             await user.save();
             userEmail = email;
-            res.json({ message: 'User registered successfully' });
+            const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            res.json({ message: 'User registered successfully', token });
         }
     } catch (err) {
         console.error("Error:", err);
