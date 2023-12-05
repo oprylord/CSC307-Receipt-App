@@ -17,16 +17,16 @@ body {
 }
 
 .header1 {
-    flex-basis: 36%;
+    flex-basis: 38%;
     padding-left: 30px;
 }
 
 .header2 {
-    flex-basis: 16%;
+    flex-basis: 17%;
 }
 
 .header3 {
-    flex-basis: 14%;
+    flex-basis: 16%;
 }
 
 .header4 {

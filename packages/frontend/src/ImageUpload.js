@@ -1,62 +1,68 @@
 import React, {useRef, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import './CSS Files/ImageUpload.css';
 
 const ImageUpload = () => {
-        const [file, setFile] = useState(null);
-        const fileInputRef = useRef(null);
+    const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false); // New loading state
+    const fileInputRef = useRef(null);
 
-        const handleFileChange = (e) => {
+    const navigate = useNavigate();
+
+    const handleFileChange = (e) => {
             setFile(e.target.files[0]);
         };
 
-        const handleFileUpload = async () => {
-            const formData = new FormData();
-            formData.append('file', file);
+    const handleFileUpload = async () => {
+        const formData = new FormData();
+        formData.append('file', file);
 
-            try {
+        try {
+            const token = localStorage.getItem('token');
+            await fetch('https://quicksplit.azurewebsites.net/upload', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const userConfirmed = window.confirm('File uploaded successfully. Do you want to process this data?');
+            if (userConfirmed) {
+                setLoading(true);
                 const token = localStorage.getItem('token');
-                console.log(token);
-                await fetch('https://quicksplit.azurewebsites.net/upload', {
-                    method: 'POST',
-                    body: formData,
+                const requestOptions = {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                     },
-                });
-
-                const userConfirmed = window.confirm('File uploaded successfully. Do you want to process this data?');
-
-                if (userConfirmed) {
-                    const token = localStorage.getItem('token');
-
-                    const requestOptions = {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-                        },
-                    };
-
-                    fetch('https://quicksplit.azurewebsites.net/process', requestOptions)
-                        .then((response) => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! Status: ${response.status}`);
-                            }
-                            return response.json();
-                        })
-                        .then((data) => {
-                            console.log('File uploaded successfully:', data);
-
-                        })
-                        .catch((error) => {
-                            console.error('Error uploading file:', error.message);
-                        });
-                }
-            } catch (error) {
-                console.error('Error uploading file:', error);
+                };
+                fetch('https://quicksplit.azurewebsites.net/process', requestOptions)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log('File processed successfully:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error uploading file:', error.message);
+                    })
+                    .finally(() => {
+                        setLoading(false);
+                        navigate("/home");
+                    });
+            } else {
+                setLoading(false);
             }
-                console.log('File uploaded successfully');
-        };
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            setLoading(false);
+        }
+        console.log('File uploaded successfully');
+    };
 
         const handleDragOver = (e) => {
             e.preventDefault();
@@ -75,6 +81,12 @@ const ImageUpload = () => {
 
         return (
             <div className="file-upload-container">
+                {loading && (
+                    <div className="loading-overlay">
+                        <div className="loading-spinner"></div>
+                        <p>Loading...</p>
+                    </div>
+                )}
                 <div
                     className="drop-zone"
                     onDragOver={handleDragOver}
