@@ -16,7 +16,7 @@ const ImageUpload = () => {
             try {
                 const token = localStorage.getItem('token');
                 console.log(token);
-                await fetch('http://localhost:8000/upload', {
+                await fetch('https://quicksplit.azurewebsites.net/upload', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -37,7 +37,7 @@ const ImageUpload = () => {
                         },
                     };
 
-                    fetch('http://localhost:8000/process', requestOptions)
+                    fetch('https://quicksplit.azurewebsites.net/process', requestOptions)
                         .then((response) => {
                             if (!response.ok) {
                                 throw new Error(`HTTP error! Status: ${response.status}`);
