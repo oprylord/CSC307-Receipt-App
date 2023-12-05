@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from 'mongoose';
 import {readFile} from 'fs/promises';
+import fsPromises from 'fs/promises';
 import * as dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import multer from 'multer';
@@ -21,6 +22,7 @@ app.use(express.json());
 dotenv.config();
 
 let relativeFilePath;
+let userEmail;
 
 mongoose.set("debug", true);
 console.log(">>mongo cluster: " + process.env.MONGO_CLUSTER);
@@ -54,6 +56,14 @@ export const UserSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    files: [
+        {
+            filename: String,
+            contentType: String,
+            size: Number,
+            uploadDate: Date,
+        },
+    ],
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -81,14 +91,28 @@ const verifyToken = (req, res, next) => {
 };
 
 app.get("/receipt", verifyToken, async (req, res) => {
+    if (!userEmail) {
+        console.log("No email");
+        return res.status(500).json({ error: 'User email not available' });
+    }
+
+    const filePath = `./JSONuploads/${userEmail}.json`;
+
     try {
-        const data = await readFile('main.json', 'utf8');
+        await fsPromises.access(filePath, fsPromises.constants.F_OK);
+
+        const data = await fsPromises.readFile(filePath, 'utf8');
         const jsonData = JSON.parse(data);
         res.json({ data: jsonData });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Error reading JSON file' });
-    }});
+        if (err.code === 'ENOENT') {
+            console.log("Please upload an image first");
+            res.status(500).json({ error: 'Please upload an image first' });
+        } else {
+            res.status(500).json({ error: 'Error reading JSON file' });
+        }
+    }
+});
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -131,6 +155,7 @@ app.post("/register", async (req, res) => {
             const hashedPassword = await bcrypt.hash(password, saltRounds);
             const user = new User({ username, password: hashedPassword, email });
             await user.save();
+            userEmail = email;
             res.json({ message: 'User registered successfully' });
         }
     } catch (err) {
@@ -152,6 +177,7 @@ app.post("/login", async (req, res) => {
 
         if (passwordMatch) {
             const token = jwt.sign({ userId: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            userEmail = email;
             res.json({ message: "Login successful", token });
         } else {
             res.status(401).json({ error: "Incorrect password." });
@@ -161,6 +187,28 @@ app.post("/login", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
+const popupDataSchema = new mongoose.Schema({
+    // Define the schema based on the data structure of your popup
+    // Example:
+    date: { type: Date, required: true },
+    content: { type: String, required: true },
+    // Add other fields as necessary
+});
+
+const PopupData = mongoose.model('PopupData', popupDataSchema);
+
+app.post('/savePopupData', verifyToken, async (req, res) => {
+    try {
+        const newPopupData = new PopupData(req.body); // Create a new instance of PopupData model with request body data
+        await newPopupData.save(); // Save the new instance to the database
+
+        res.status(200).json({ message: 'Popup data saved successfully' });
+    } catch (err) {
+        console.error('Error saving popup data:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 app.get("/process", verifyToken, async (req, res) => {
     const listFiles = [relativeFilePath];
@@ -204,13 +252,24 @@ app.get("/process", verifyToken, async (req, res) => {
         try {
             const response = await request(requestOptions);
             const responseData = typeof response === 'string' ? JSON.parse(response) : response;
-            fs.writeFileSync('./main.json', JSON.stringify(responseData, null, 2));
-            console.log('Response from Veryfi:', response);
+            fs.writeFileSync(`./JSONuploads/${userEmail}.json`, JSON.stringify(responseData, null, 2));
+            res.status(200).json({ message: 'File processed successfully' });
         } catch (error) {
             console.error('Error:', error);
         }
     });
 });
+
+app.get('/getPopupData', verifyToken, async (req, res) => {
+    try {
+        const popupData = await PopupData.find({}); // Fetch all documents from PopupData collection
+        res.json(popupData);
+    } catch (err) {
+        console.error('Error fetching popup data:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 app.listen(process.env.PORT || port, () => {
     console.log(`Server is running on port ${port}`);
