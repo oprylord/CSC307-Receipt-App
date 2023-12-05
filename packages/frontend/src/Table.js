@@ -42,9 +42,9 @@ const Table = (props) => {
         }
 
         // Creating and returning a string of the final results
-        let retStr = "";
+        let retStr = [];
         for(let i = 0; i < buttonLabels.length; i++){
-            retStr += buttonLabels[i] + ": " + costs[i] + "\n";
+            retStr.push(buttonLabels[i] + ': ' + '$' + Number(costs[i].toFixed(2)));
         }
         return retStr;
     }

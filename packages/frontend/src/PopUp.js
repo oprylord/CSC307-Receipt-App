@@ -48,10 +48,11 @@ const PopupButton = (props) => {
                     },
                 }}
 
-                // Close button for the popup
             >
                 <div>
-                    {popupData}
+                    {popupData.map((item, index) => (
+                        <div key={index} className='modalText'>{item}</div>
+                    ))}
                     <button onClick={closeModal} className='closeButton'>
                         X
                     </button>
