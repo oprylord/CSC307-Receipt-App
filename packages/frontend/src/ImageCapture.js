@@ -47,7 +47,7 @@ const ImageCapture = () => {
     
             if (userConfirmed) {
                 const processResponse = await fetch('https://quicksplit.azurewebsites.net/process', {
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
