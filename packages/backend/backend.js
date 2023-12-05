@@ -210,7 +210,7 @@ app.post('/savePopupData', verifyToken, async (req, res) => {
 });
 
 
-app.get("/process", verifyToken, async (req, res) => {
+app.get("/process", async (req, res) => {
     const listFiles = [relativeFilePath];
     const zipFilePath = 'receipts.zip';
 
