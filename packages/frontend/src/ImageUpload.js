@@ -34,7 +34,7 @@ const ImageUpload = () => {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                        'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
                     },
                 };
                 fetch('https://quicksplit.azurewebsites.net/process', requestOptions)
