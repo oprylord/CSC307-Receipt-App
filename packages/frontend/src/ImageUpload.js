@@ -22,6 +22,7 @@ const ImageUpload = () => {
             await fetch('https://quicksplit.azurewebsites.net/upload', {
                 method: 'POST',
                 body: formData,
+                credentials: 'include',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -32,6 +33,7 @@ const ImageUpload = () => {
                 const token = localStorage.getItem('token');
                 const requestOptions = {
                     method: 'GET',
+                    credentials: 'include',
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
