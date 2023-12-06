@@ -17,12 +17,12 @@ body {
 }
 
 .header1 {
-    flex-basis: 38%;
+    flex-basis: 34%;
     padding-left: 30px;
 }
 
 .header2 {
-    flex-basis: 17%;
+    flex-basis: 13%;
 }
 
 .header3 {
@@ -74,7 +74,25 @@ body {
     flex-basis: 30%;
 }
 
+
+
+
+.ncol1 {
+    flex-basis:0%;
+}
+
+.ncol2 {
+    flex-basis:0%;
+}
+
+.ncol3 {
+    flex-basis:0%;
+}
+
+
+
 .tableButton {
+    margin-top: 10px;
     margin-left: 10px;
     margin-right: 10px;
     border: none;
