@@ -20,7 +20,6 @@ function Header() {
                 <a href="/home">Home</a>
                 <a href="/imageUpload">Image Upload</a>
                 <a href="/imageCapture">Image Capture</a>
-                <a href="/history">History</a>
                 <button
                     className="navigation-button navigation-close-button"
                     onClick={showNavbar}>
