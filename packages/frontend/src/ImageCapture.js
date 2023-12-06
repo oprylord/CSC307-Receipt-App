@@ -1,9 +1,12 @@
 import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './CSS Files/ImageCapture.css';
 
 
 const ImageCapture = () => {
+    const navigate = useNavigate();
     const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false); // New loading state
     const [isWebcamActive, setIsWebcamActive] = useState(false);
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
@@ -46,21 +49,35 @@ const ImageCapture = () => {
             const userConfirmed = window.confirm('File uploaded successfully. Do you want to process this data?');
     
             if (userConfirmed) {
-                const processResponse = await fetch('http://localhost:8000/process', {
-                    method: 'POST',
+                setLoading(true);
+                const token = localStorage.getItem('token');
+                const requestOptions = {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
                     },
-                });
-    
-                if (!processResponse.ok) {
-                    throw new Error(`HTTP error! Status: ${processResponse.status}`);
-                }
-    
-                const data = await processResponse.json();
-                console.log('File processed successfully:', data);
+                };
+                fetch('http://localhost:8000/process', requestOptions)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log('File processed successfully:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error uploading file:', error.message);
+                    })
+                    .finally(() => {
+                        setLoading(false);
+                        navigate("/home");
+                    });
             }
         } catch (error) {
+            setLoading(false);
             console.error('Error uploading file:', error);
         }
     };
@@ -88,6 +105,12 @@ const ImageCapture = () => {
 
     return (
         <div className="file-upload-container">
+            {loading && (
+                <div className="loading-overlay">
+                    <div className="loading-spinner"></div>
+                    <p>Loading...</p>
+                </div>
+            )}
             {!image && <video ref={videoRef} autoPlay playsInline width="640" height="480" />}
             {isWebcamActive && <button className="button" onClick={captureImage}>Capture</button>}
             <canvas ref={canvasRef} width="640" height="480" style={{ display: 'none' }}></canvas>
