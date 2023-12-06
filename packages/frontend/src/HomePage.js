@@ -81,7 +81,7 @@ const HomePage = () => {
 
 function fetchData() {
     const token = localStorage.getItem('token');
-    return fetch("http://localhost:8000/receipt", {
+    return fetch("https://quicksplit.azurewebsites.net/receipt", {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`,
