@@ -11,7 +11,7 @@ const History = () => {
             const token = localStorage.getItem('token'); // Or use context if you have a context-based auth system
             
             try {
-                const response = await fetch('http://localhost:8000/getPopupData', {
+                const response = await fetch('https://quicksplit.azurewebsites.net/getPopupData', {
                     headers: {
                         'Authorization': `Bearer ${token}`, // Include the JWT token if required
                     },
