@@ -237,7 +237,7 @@ app.get("/process", verifyToken, async (req, res) => {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'CLIENT-ID': process.env.CLIENT_ID,
-                'AUTHORIZATION': 'apikey ' + process.env.USERNAME + ':' + process.env.API_KEY
+                'AUTHORIZATION': 'apikey ' + process.env.USER + ':' + process.env.API_KEY
             },
             'formData': {
                 'file': {
