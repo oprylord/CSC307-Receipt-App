@@ -31,7 +31,7 @@ const LoginClick = async ({ email, password, setErrors, navigate }) => {
 const SignUpClick = async ({username, email, password, setErrors, navigate}) => {
     try {
         const data = { username, password, email };
-        const response = await fetch("http://localhost:8000/register", {
+        const response = await fetch("https://quicksplit.azurewebsites.net/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
